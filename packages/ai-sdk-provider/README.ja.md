@@ -1,6 +1,12 @@
 # AI SDK - Aihubmix Provider
 
-> **�� 10% 割引！**
+<div align="center">
+  <a href="README.md">🇺🇸 English</a> | 
+  <a href="README.zh.md">🇨🇳 中文</a> | 
+  <a href="README.ja.md">🇯🇵 日本語</a>
+</div>
+
+> **🎉 10% 割引！**
 app-codeが内蔵されており、この方法でモデルをリクエストすると10%割引になります。
 
 **[Aihubmix 公式サイト](https://aihubmix.com/)** | **[モデルスクエア](https://aihubmix.com/models)**

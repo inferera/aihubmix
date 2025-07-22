@@ -1,5 +1,11 @@
 # AI SDK - Aihubmix Provider
 
+<div align="center">
+  <a href="README.md">🇺🇸 English</a> | 
+  <a href="README.zh.md">🇨🇳 中文</a> | 
+  <a href="README.ja.md">🇯🇵 日本語</a>
+</div>
+
 > **🎉 10% 折扣！**
 已内置app-code，使用此方式请求所有模型可享受 10% 折扣。
 
