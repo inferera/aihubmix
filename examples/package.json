@@ -1,0 +1,31 @@
+{
+  "name": "@aihubmix/examples",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx ai-sdk-provider/index.ts",
+    "test": "tsx ai-sdk-provider/index.ts",
+    "test:ai-sdk-provider": "tsx ai-sdk-provider/index.ts",
+    "build": "tsc",
+    "start": "node dist/ai-sdk-provider.js"
+  },
+  "dependencies": {
+    "@aihubmix/ai-sdk-provider": "workspace:*",
+    "ai": "^4.3.19",
+    "dotenv": "^16.6.1",
+    "image-type": "^5.2.0",
+    "optional": "^0.1.4",
+    "sharp": "^0.33.5",
+    "terminal-image": "^3.1.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "20.17.24",
+    "tsx": "^4.20.3",
+    "typescript": "5.6.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

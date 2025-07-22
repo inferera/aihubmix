@@ -1,0 +1,17 @@
+.DS_Store
+.cache
+.env
+.envrc
+.next
+.turbo
+dist
+dist-ssr
+examples/*/build
+node_modules
+public/dist
+server/dist
+test-results
+tsconfig.vitest-temp.json
+*.log
+*.local
+*.tsbuildinfo
