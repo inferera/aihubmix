@@ -11,7 +11,7 @@ console.log('🚀 开始执行 Aihubmix AI SDK Provider 测试套件\n');
 // 测试配置
 const testConfig = {
   generateText: {
-    model: 'gpt-4o-mini',
+    model: 'claude-3-7-sonnet-20250219',
     prompt: 'Invent a new holiday and describe its traditions.',
   },
   streamText: {
@@ -118,7 +118,7 @@ async function testStreamText(): Promise<boolean> {
     const result = streamText({
       model: aihubmix(testConfig.streamText.model),
       prompt: testConfig.streamText.prompt,
-      maxTokens: 256,
+      maxOutputTokens: 256,
       temperature: 0.3,
       maxRetries: 3,
     });
@@ -248,9 +248,9 @@ async function testGenerateSpeech(): Promise<boolean> {
 async function testTranscribe(): Promise<boolean> {
   console.log('\n🎧 测试 transcribe...');
   try {
-    const {text, durationInSeconds} = await transcribe({
+    const { text, durationInSeconds } = await transcribe({
       model: aihubmix.transcription(testConfig.transcribe.model),
-        audio: testConfig.transcribe.audio,
+      audio: await readFile('./data/galileo.mp3'),
     });
   
     console.log('✅ transcribe 测试成功', text);

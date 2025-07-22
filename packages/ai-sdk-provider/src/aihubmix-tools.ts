@@ -16,13 +16,13 @@ function webSearchPreviewTool({
   };
 } = {}): {
   type: 'provider-defined';
-  id: 'openai.web_search_preview';
+  id: 'aihubmix.web_search_preview';
   args: {};
   parameters: typeof WebSearchPreviewParameters;
 } {
   return {
     type: 'provider-defined',
-    id: 'openai.web_search_preview',
+    id: 'aihubmix.web_search_preview',
     args: {
       searchContextSize,
       userLocation,
@@ -31,6 +31,6 @@ function webSearchPreviewTool({
   };
 }
 
-export const openaiTools = {
+export const aihubmixTools = {
   webSearchPreview: webSearchPreviewTool,
 };

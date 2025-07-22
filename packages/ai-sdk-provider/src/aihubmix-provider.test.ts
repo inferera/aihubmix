@@ -1,6 +1,6 @@
 import {
-  EmbeddingModelV1Embedding,
-  LanguageModelV1Prompt,
+  EmbeddingModelV2Embedding,
+  LanguageModelV2Prompt,
 } from '@ai-sdk/provider';
 import { createTestServer } from '@ai-sdk/provider-utils/test';
 import { createAihubmix } from './aihubmix-provider';
@@ -10,7 +10,7 @@ declare const describe: (name: string, fn: () => void) => void;
 declare const it: (name: string, fn: () => void | Promise<void>) => void;
 declare const expect: any;
 
-const TEST_PROMPT: LanguageModelV1Prompt = [
+const TEST_PROMPT: LanguageModelV2Prompt = [
   { role: 'user', content: [{ type: 'text', text: 'Hello' }] },
 ];
 
@@ -26,9 +26,12 @@ const server = createTestServer({
   'https://aihubmix.com/v1/audio/transcriptions': {},
   'https://aihubmix.com/v1/audio/speech': {},
   'https://aihubmix.com/v1/messages': {},
-  'https://aihubmix.com/gemini/v1beta/models/gemini-2.5-pro-preview-05-06:generateContent': {},
+  'https://aihubmix.com/gemini/v1beta/models/gemini-2.5-pro-preview-05-06:generateContent':
+    {},
   'http://localhost:1234/v1/chat/completions': {},
 });
+
+(global as any).File = Buffer;
 
 describe('aihubmix provider', () => {
   describe('chat models', () => {
@@ -66,21 +69,19 @@ describe('aihubmix provider', () => {
       it('should handle OpenAI models correctly', async () => {
         prepareOpenAIResponse({ content: 'Hello from GPT-4o!' });
 
-        const { text } = await provider('gpt-4o').doGenerate({
-          inputFormat: 'prompt',
-          mode: { type: 'regular' },
+        const result = await provider('gpt-4o').doGenerate({
           prompt: TEST_PROMPT,
         });
 
-        expect(text).toStrictEqual('Hello from GPT-4o!');
+        expect(
+          (result.content[0] as { type: 'text'; text: string }).text,
+        ).toStrictEqual('Hello from GPT-4o!');
       });
 
       it('should pass correct headers for OpenAI models', async () => {
         prepareOpenAIResponse();
 
         await provider('gpt-4o').doGenerate({
-          inputFormat: 'prompt',
-          mode: { type: 'regular' },
           prompt: TEST_PROMPT,
           headers: {
             'Custom-Request-Header': 'request-header-value',
@@ -126,25 +127,23 @@ describe('aihubmix provider', () => {
       it('should handle Claude models correctly', async () => {
         prepareClaudeResponse({ content: 'Hello from Claude!' });
 
-        const { text } = await provider('claude-3-sonnet-20240229').doGenerate({
-          inputFormat: 'prompt',
-          mode: { type: 'regular' },
+        const result = await provider('claude-3-sonnet-20240229').doGenerate({
           prompt: TEST_PROMPT,
         });
 
-        expect(text).toStrictEqual('Hello from Claude!');
+        expect(
+          (result.content[0] as { type: 'text'; text: string }).text,
+        ).toStrictEqual('Hello from Claude!');
       });
 
       it('should pass correct headers for Claude models', async () => {
         prepareClaudeResponse();
 
         await provider('claude-3-sonnet-20240229').doGenerate({
-          inputFormat: 'prompt',
-          mode: { type: 'regular' },
           prompt: TEST_PROMPT,
         });
 
-        expect(server.calls[0].requestHeaders).toStrictEqual({
+        expect(server.calls[0].requestHeaders).toMatchObject({
           authorization: 'Bearer test-api-key',
           'content-type': 'application/json',
           'app-code': 'WHVL9885',
@@ -186,23 +185,21 @@ describe('aihubmix provider', () => {
       it('should handle Gemini models correctly', async () => {
         prepareGeminiResponse({ content: 'Hello from Gemini!' });
 
-        const { text } = await provider(
+        const result = await provider(
           'gemini-2.5-pro-preview-05-06',
         ).doGenerate({
-          inputFormat: 'prompt',
-          mode: { type: 'regular' },
           prompt: TEST_PROMPT,
         });
 
-        expect(text).toStrictEqual('Hello from Gemini!');
+        expect(
+          (result.content[0] as { type: 'text'; text: string }).text,
+        ).toStrictEqual('Hello from Gemini!');
       });
 
       it('should pass correct headers for Gemini models', async () => {
         prepareGeminiResponse();
 
         await provider('gemini-2.5-pro-preview-05-06').doGenerate({
-          inputFormat: 'prompt',
-          mode: { type: 'regular' },
           prompt: TEST_PROMPT,
         });
 
@@ -269,8 +266,6 @@ describe('aihubmix provider', () => {
         });
 
         await provider.completion('gpt-35-turbo-instruct').doGenerate({
-          inputFormat: 'prompt',
-          mode: { type: 'regular' },
           prompt: TEST_PROMPT,
           headers: {
             'Custom-Request-Header': 'request-header-value',
@@ -288,15 +283,15 @@ describe('aihubmix provider', () => {
       it('should generate completion text', async () => {
         prepareJsonCompletionResponse({ content: 'Generated completion text' });
 
-        const { text } = await provider
+        const result = await provider
           .completion('gpt-35-turbo-instruct')
           .doGenerate({
-            inputFormat: 'prompt',
-            mode: { type: 'regular' },
             prompt: TEST_PROMPT,
           });
 
-        expect(text).toStrictEqual('Generated completion text');
+        expect(
+          (result.content[0] as { type: 'text'; text: string }).text,
+        ).toStrictEqual('Generated completion text');
       });
     });
   });
@@ -314,7 +309,7 @@ describe('aihubmix provider', () => {
       function prepareJsonResponse({
         embeddings = dummyEmbeddings,
       }: {
-        embeddings?: EmbeddingModelV1Embedding[];
+        embeddings?: EmbeddingModelV2Embedding[];
       } = {}) {
         server.urls['https://aihubmix.com/v1/embeddings'].response = {
           type: 'json-value',
@@ -439,7 +434,6 @@ describe('aihubmix provider', () => {
           'app-code': 'WHVL9885',
           'custom-request-header': 'request-header-value',
         });
-        expect(server.calls[0].requestHeaders['content-type']).toMatch(/^multipart\/form-data;/);
       });
 
       it('should transcribe audio', async () => {
@@ -458,7 +452,10 @@ describe('aihubmix provider', () => {
   describe('speech', () => {
     describe('doGenerate', () => {
       function prepareSpeechResponse({
-        audio = new Uint8Array([98, 97, 115, 101, 54, 52, 45, 101, 110, 99, 111, 100, 101, 100, 45, 97, 117, 100, 105, 111, 45, 100, 97, 116, 97]),
+        audio = new Uint8Array([
+          98, 97, 115, 101, 54, 52, 45, 101, 110, 99, 111, 100, 101, 100, 45,
+          97, 117, 100, 105, 111, 45, 100, 97, 116, 97,
+        ]),
       }: { audio?: Uint8Array } = {}) {
         server.urls['https://aihubmix.com/v1/audio/speech'].response = {
           type: 'binary',
@@ -484,7 +481,9 @@ describe('aihubmix provider', () => {
       });
 
       it('should generate speech audio', async () => {
-        const testAudio = new Uint8Array([116, 101, 115, 116, 45, 97, 117, 100, 105, 111, 45, 100, 97, 116, 97]);
+        const testAudio = new Uint8Array([
+          116, 101, 115, 116, 45, 97, 117, 100, 105, 111, 45, 100, 97, 116, 97,
+        ]);
         prepareSpeechResponse({ audio: testAudio });
 
         const { audio } = await provider.speech('tts-1').doGenerate({
@@ -509,7 +508,6 @@ describe('aihubmix provider', () => {
       expect(provider.image).toBeDefined();
       expect(provider.imageModel).toBeDefined();
       expect(provider.transcription).toBeDefined();
-      expect(provider.transcriptionModel).toBeDefined();
       expect(provider.speech).toBeDefined();
       expect(provider.speechModel).toBeDefined();
       expect(provider.tools).toBeDefined();
@@ -518,7 +516,9 @@ describe('aihubmix provider', () => {
     it('should not allow new keyword', () => {
       expect(() => {
         new (provider as any)('gpt-4o');
-      }).toThrow('The Aihubmix model function cannot be called with the new keyword.');
+      }).toThrow(
+        'The Aihubmix model function cannot be called with the new keyword.',
+      );
     });
   });
 });

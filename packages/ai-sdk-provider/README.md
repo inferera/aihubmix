@@ -10,7 +10,7 @@ One Gateway, Infinite Models；one-stop request: OpenAI, Claude, Gemini, DeepSee
 
 ## Setup
 
-The Aihubmix provider is available in the `@aihubmix/ai-sdk-provider` module. You can install it with
+The Aihubmix provider is available in the `@aihubmix/ai-sdk-provider` module. You can install it with [@aihubmix/ai-sdk-provider](https://www.npmjs.com/package/@aihubmix/ai-sdk-provider)
 
 ```bash
 npm i @aihubmix/ai-sdk-provider

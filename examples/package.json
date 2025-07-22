@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@aihubmix/ai-sdk-provider": "workspace:*",
-    "ai": "^4.3.19",
+    "ai": "5.0.0-beta.25",
     "dotenv": "^16.6.1",
     "image-type": "^5.2.0",
     "optional": "^0.1.4",

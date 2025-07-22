@@ -1,86 +1,89 @@
 import {
   OpenAIChatLanguageModel,
-  OpenAIChatSettings,
   OpenAICompletionLanguageModel,
-  OpenAICompletionSettings,
   OpenAIEmbeddingModel,
-  OpenAIEmbeddingSettings,
   OpenAIImageModel,
-  OpenAIImageSettings,
   OpenAIResponsesLanguageModel,
   OpenAITranscriptionModel,
   OpenAISpeechModel,
 } from '@ai-sdk/openai/internal';
+import { AnthropicMessagesLanguageModel } from '@ai-sdk/anthropic/internal';
+import { GoogleGenerativeAILanguageModel } from '@ai-sdk/google/internal';
 import {
-  AnthropicMessagesLanguageModel,
-  AnthropicMessagesSettings,
-} from '@ai-sdk/anthropic/internal';
-import {
-  InternalGoogleGenerativeAISettings,
-  GoogleGenerativeAILanguageModel,
-} from '@ai-sdk/google/internal';
-import {
-  EmbeddingModelV1,
-  LanguageModelV1,
-  ProviderV1,
-  ImageModelV1,
-  TranscriptionModelV1,
-  SpeechModelV1,
-  TranscriptionModelV1CallOptions,
+  EmbeddingModelV2,
+  LanguageModelV2,
+  ProviderV2,
+  ImageModelV2,
+  TranscriptionModelV2,
+  SpeechModelV2,
+  TranscriptionModelV2CallOptions,
 } from '@ai-sdk/provider';
 import { FetchFunction, loadApiKey } from '@ai-sdk/provider-utils';
-import { openaiTools } from './aihubmix-tools';
+import { aihubmixTools } from './aihubmix-tools';
 
-export interface AihubmixProvider extends ProviderV1 {
-  (deploymentId: string, settings?: OpenAIChatSettings): LanguageModelV1;
+// 导入设置类型
+import type { OpenAIProviderSettings } from '@ai-sdk/openai';
+
+
+export interface AihubmixProvider extends ProviderV2 {
+  (deploymentId: string, settings?: OpenAIProviderSettings): LanguageModelV2;
 
   languageModel(
     deploymentId: string,
-    settings?: OpenAIChatSettings,
-  ): LanguageModelV1;
+    settings?: OpenAIProviderSettings,
+  ): LanguageModelV2;
 
-  chat(deploymentId: string, settings?: OpenAIChatSettings): LanguageModelV1;
+  chat(
+    deploymentId: string,
+    settings?: OpenAIProviderSettings,
+  ): LanguageModelV2;
 
-  responses(deploymentId: string): LanguageModelV1;
+  responses(deploymentId: string): LanguageModelV2;
 
   completion(
     deploymentId: string,
-    settings?: OpenAICompletionSettings,
-  ): LanguageModelV1;
+    settings?: OpenAIProviderSettings,
+  ): LanguageModelV2;
 
   embedding(
     deploymentId: string,
-    settings?: OpenAIEmbeddingSettings,
-  ): EmbeddingModelV1<string>;
+    settings?: OpenAIProviderSettings,
+  ): EmbeddingModelV2<string>;
 
-  image(deploymentId: string, settings?: OpenAIImageSettings): ImageModelV1;
+  image(deploymentId: string, settings?: OpenAIProviderSettings): ImageModelV2;
 
   imageModel(
     deploymentId: string,
-    settings?: OpenAIImageSettings,
-  ): ImageModelV1;
+    settings?: OpenAIProviderSettings,
+  ): ImageModelV2;
 
   textEmbedding(
     deploymentId: string,
-    settings?: OpenAIEmbeddingSettings,
-  ): EmbeddingModelV1<string>;
+    settings?: OpenAIProviderSettings,
+  ): EmbeddingModelV2<string>;
 
   textEmbeddingModel(
     deploymentId: string,
-    settings?: OpenAIEmbeddingSettings,
-  ): EmbeddingModelV1<string>;
+    settings?: OpenAIProviderSettings,
+  ): EmbeddingModelV2<string>;
 
-  transcription(deploymentId: string): TranscriptionModelV1;
+  transcription(deploymentId: string): TranscriptionModelV2;
 
-  speech(deploymentId: string): SpeechModelV1;
+  speech(deploymentId: string): SpeechModelV2;
 
-  speechModel(deploymentId: string): SpeechModelV1;
+  speechModel(deploymentId: string): SpeechModelV2;
 
-  tools: typeof openaiTools;
+  tools: typeof aihubmixTools;
+}
+
+export interface AihubmixProviderSettings {
+  apiKey?: string;
+  fetch?: FetchFunction;
+  compatibility?: 'strict' | 'compatible';
 }
 
 class AihubmixTranscriptionModel extends OpenAITranscriptionModel {
-  async doGenerate(options: TranscriptionModelV1CallOptions) {
+  async doGenerate(options: TranscriptionModelV2CallOptions) {
     // 根据MIME类型设置正确的文件扩展名
     if (options.mediaType) {
       const mimeTypeMap: Record<string, string> = {
@@ -98,39 +101,41 @@ class AihubmixTranscriptionModel extends OpenAITranscriptionModel {
       
       const extension = mimeTypeMap[options.mediaType];
       if (extension) {
-        // 修改options，确保文件名有正确的扩展名
-        const modifiedOptions = {
-          ...options,
-          mediaType: options.mediaType,
-        };
-        
         // 重写getArgs方法来设置正确的文件名
         const originalGetArgs = (this as any).getArgs;
-        (this as any).getArgs = function(args: any) {
-          const result = originalGetArgs.call(this, args);
+        (this as any).getArgs = async function(args: any) {
+          const result = await originalGetArgs.call(this, args);
           if (result.formData) {
             // 找到file字段并修改文件名
             const fileEntry = result.formData.get('file');
             if (fileEntry && typeof fileEntry === 'object' && 'name' in fileEntry) {
-              // 在 Node.js 环境中，我们可能需要创建一个新的文件对象
-              // 或者直接修改现有的对象
+              // 创建新的 File 对象，设置正确的文件名
               try {
-                const newFile = new (globalThis as any).File([fileEntry], `audio.${extension}`, { 
+                const newFile = new File([fileEntry], `audio.${extension}`, { 
                   type: options.mediaType 
                 });
                 result.formData.set('file', newFile);
               } catch (error) {
-                // 如果 File 构造函数不可用，尝试修改现有对象的名称
-                if (fileEntry && typeof fileEntry === 'object') {
-                  (fileEntry as any).name = `audio.${extension}`;
+                console.log('Failed to create new File object:', error);
+                // 如果创建新 File 对象失败，尝试其他方法
+                // 在 Node.js 环境中，可能需要使用 Buffer 或其他方式
+                if (fileEntry && typeof fileEntry === 'object' && 'arrayBuffer' in fileEntry) {
+                  try {
+                    const arrayBuffer = await (fileEntry as any).arrayBuffer();
+                    const newFile = new File([arrayBuffer], `audio.${extension}`, { 
+                      type: options.mediaType 
+                    });
+                    result.formData.set('file', newFile);
+                    console.log('Created new file from arrayBuffer with name:', `audio.${extension}`);
+                  } catch (bufferError) {
+                    console.log('Failed to create file from arrayBuffer:', bufferError);
+                  }
                 }
               }
             }
           }
           return result;
         };
-        
-        return super.doGenerate(modifiedOptions);
       }
     }
     
@@ -138,16 +143,9 @@ class AihubmixTranscriptionModel extends OpenAITranscriptionModel {
   }
 }
 
-export interface AihubmixProviderSettings {
-  apiKey?: string;
-  fetch?: FetchFunction;
-  compatibility?: 'strict' | 'compatible';
-}
-
 export function createAihubmix(
   options: AihubmixProviderSettings = {},
 ): AihubmixProvider {
-  const compatibility = options.compatibility ?? 'compatible';
   const getHeaders = () => ({
     Authorization: `Bearer ${loadApiKey({
       apiKey: options.apiKey,
@@ -174,23 +172,21 @@ export function createAihubmix(
 
   const createChatModel = (
     deploymentName: string,
-    settings: OpenAIChatSettings = {},
+    settings: OpenAIProviderSettings = {},
   ) => {
     const headers = getHeaders();
     if (deploymentName.startsWith('claude-')) {
-      return new AnthropicMessagesLanguageModel(
-        deploymentName,
-        settings as AnthropicMessagesSettings,
-        {
-          provider: 'aihubmix.chat',
-          baseURL: url({ path: '', modelId: deploymentName }),
-          headers: {
-            ...headers,
-            'x-api-key': headers['Authorization'].split(' ')[1],
-          },
-          supportsImageUrls: true,
+      return new AnthropicMessagesLanguageModel(deploymentName, {
+        provider: 'aihubmix.chat',
+        baseURL: url({ path: '', modelId: deploymentName }),
+        headers: {
+          ...headers,
+          'x-api-key': headers['Authorization'].split(' ')[1],
         },
-      );
+        supportedUrls: () => ({
+          'image/*': [/^https?:\/\/.*$/],
+        }),
+      });
     }
     if (
       (deploymentName.startsWith('gemini') ||
@@ -200,7 +196,6 @@ export function createAihubmix(
     ) {
       return new GoogleGenerativeAILanguageModel(
         deploymentName,
-        settings as InternalGoogleGenerativeAISettings,
         {
           provider: 'aihubmix.chat',
           baseURL: 'https://aihubmix.com/gemini/v1beta',
@@ -209,37 +204,35 @@ export function createAihubmix(
             'x-goog-api-key': headers['Authorization'].split(' ')[1],
           },
           generateId: () => `aihubmix-${Date.now()}`,
-          isSupportedUrl: () => true,
+          supportedUrls: () => ({}),
         },
       );
     }
 
-    return new OpenAIChatLanguageModel(deploymentName, settings, {
+    return new OpenAIChatLanguageModel(deploymentName, {
       provider: 'aihubmix.chat',
       url,
       headers: getHeaders,
-      compatibility,
       fetch: options.fetch,
     });
   };
 
   const createCompletionModel = (
     modelId: string,
-    settings: OpenAICompletionSettings = {},
+    settings: any = {},
   ) =>
-    new OpenAICompletionLanguageModel(modelId, settings, {
+    new OpenAICompletionLanguageModel(modelId, {
       provider: 'aihubmix.completion',
       url,
-      compatibility,
       headers: getHeaders,
       fetch: options.fetch,
     });
 
   const createEmbeddingModel = (
     modelId: string,
-    settings: OpenAIEmbeddingSettings = {},
+    settings: any = {},
   ) => {
-    return new OpenAIEmbeddingModel(modelId, settings, {
+    return new OpenAIEmbeddingModel(modelId, {
       provider: 'aihubmix.embeddings',
       headers: getHeaders,
       url,
@@ -256,9 +249,9 @@ export function createAihubmix(
 
   const createImageModel = (
     modelId: string,
-    settings: OpenAIImageSettings = {},
+    settings: any = {},
   ) => {
-    return new OpenAIImageModel(modelId, settings, {
+    return new OpenAIImageModel(modelId, {
       provider: 'aihubmix.image',
       url,
       headers: getHeaders,
@@ -282,7 +275,7 @@ export function createAihubmix(
     });
   const provider = function (
     deploymentId: string,
-    settings?: OpenAIChatSettings | OpenAICompletionSettings,
+    settings?: OpenAIProviderSettings,
   ) {
     if (new.target) {
       throw new Error(
@@ -290,7 +283,7 @@ export function createAihubmix(
       );
     }
 
-    return createChatModel(deploymentId, settings as OpenAIChatSettings);
+    return createChatModel(deploymentId, settings);
   };
 
   provider.languageModel = createChatModel;
@@ -310,7 +303,7 @@ export function createAihubmix(
   provider.speech = createSpeechModel;
   provider.speechModel = createSpeechModel;
 
-  provider.tools = openaiTools;
+  provider.tools = aihubmixTools;
 
   return provider as AihubmixProvider;
 }

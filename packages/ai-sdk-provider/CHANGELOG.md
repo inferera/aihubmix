@@ -1,5 +1,12 @@
 # @ai-sdk/aihubmix
 
+## 0.0.2
+
+### Patch Changes
+
+- change llm V1 to V2
+- 8e1ca80: Aihubmix Provider for Vercel AI SDK
+
 ## 0.0.1
 
 ### Patch Changes
