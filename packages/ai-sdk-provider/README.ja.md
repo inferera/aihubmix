@@ -1,54 +1,52 @@
 # AI SDK - Aihubmix Provider
 
-> **🎉 10% discount!**
-Built-in app-code; using this method to request all models offers a 10% discount.
+> **�� 10% 割引！**
+app-codeが内蔵されており、この方法でモデルをリクエストすると10%割引になります。
 
-**[Aihubmix Official Website](https://aihubmix.com/)** | **[Model Square](https://aihubmix.com/models)**
+**[Aihubmix 公式サイト](https://aihubmix.com/)** | **[モデルスクエア](https://aihubmix.com/models)**
 
-The **[Aihubmix provider](https://v5.ai-sdk.dev/providers/community-providers/aihubmix)** for the [AI SDK](https://ai-sdk.dev/docs)
-One Gateway, Infinite Models；one-stop request: OpenAI, Claude, Gemini, DeepSeek, Qwen, and over 500 AI models.
+[AI SDK](https://ai-sdk.dev/docs)用の **[Aihubmix provider](https://v5.ai-sdk.dev/providers/community-providers/aihubmix)**
+一つのゲートウェイ、無限のモデル；ワンストップリクエスト：OpenAI、Claude、Gemini、DeepSeek、Qwen、そして500以上のAIモデル。
 
+## サポートされている機能
 
-## Supported Features
+Aihubmix providerは以下のAI機能をサポートしています：
 
-The Aihubmix provider supports the following AI features:
+- **テキスト生成**：様々なモデルでのチャット完了
+- **ストリーミングテキスト**：リアルタイムテキストストリーミング
+- **画像生成**：テキストプロンプトから画像を作成
+- **埋め込み**：単一およびバッチテキスト埋め込み
+- **オブジェクト生成**：スキーマを使用した構造化データ生成
+- **ストリーミングオブジェクト**：リアルタイム構造化データストリーミング
+- **音声合成**：テキストから音声への変換
+- **転写**：音声からテキストへの変換
+- **ツール**：ウェブ検索およびその他のツール
 
-- **Text Generation**: Chat completion with various models
-- **Streaming Text**: Real-time text streaming
-- **Image Generation**: Create images from text prompts
-- **Embeddings**: Single and batch text embeddings
-- **Object Generation**: Structured data generation with schemas
-- **Streaming Objects**: Real-time structured data streaming
-- **Speech Synthesis**: Text-to-speech conversion
-- **Transcription**: Speech-to-text conversion
-- **Tools**: Web search and other tools
+## セットアップ
 
-
-## Setup
-
-The Aihubmix provider is available in the `@aihubmix/ai-sdk-provider` module. You can install it with [@aihubmix/ai-sdk-provider](https://www.npmjs.com/package/@aihubmix/ai-sdk-provider)
+Aihubmix providerは`@aihubmix/ai-sdk-provider`モジュールで利用可能です。[@aihubmix/ai-sdk-provider](https://www.npmjs.com/package/@aihubmix/ai-sdk-provider)でインストールできます
 
 ```bash
 npm i @aihubmix/ai-sdk-provider
 ```
 
-## Provider Instance
+## Provider インスタンス
 
-You can import the default provider instance `aihubmix` from `@aihubmix/ai-sdk-provider`:
+`@aihubmix/ai-sdk-provider`からデフォルトのproviderインスタンス`aihubmix`をインポートできます：
 
 ```ts
 import { aihubmix } from '@aihubmix/ai-sdk-provider';
 ```
 
-## Configuration
+## 設定
 
-Set your Aihubmix API key as an environment variable:
+Aihubmix APIキーを環境変数として設定：
 
 ```bash
 export AIHUBMIX_API_KEY="your-api-key-here"
 ```
 
-Or pass it directly to the provider:
+または直接providerに渡す：
 
 ```ts
 import { createAihubmix } from '@aihubmix/ai-sdk-provider';
@@ -58,9 +56,9 @@ const aihubmix = createAihubmix({
 });
 ```
 
-## Usage
+## 使用
 
-First, import the necessary functions:
+まず、必要な関数をインポートします：
 
 ```ts
 import { createAihubmix } from '@aihubmix/ai-sdk-provider';
@@ -78,7 +76,7 @@ import {
 import { z } from 'zod';
 ```
 
-### Generate Text
+### テキスト生成
 
 ```ts
 import { aihubmix } from '@aihubmix/ai-sdk-provider';
@@ -86,11 +84,11 @@ import { generateText } from 'ai';
 
 const { text } = await generateText({
   model: aihubmix('o4-mini'),
-  prompt: 'Write a vegetarian lasagna recipe for 4 people.',
+  prompt: '4人用のベジタリアンラザニアのレシピを書いてください。',
 });
 ```
 
-### Claude Model
+### Claudeモデル
 
 ```ts
 import { aihubmix } from '@aihubmix/ai-sdk-provider';
@@ -98,11 +96,11 @@ import { generateText } from 'ai';
 
 const { text } = await generateText({
   model: aihubmix('claude-3-7-sonnet-20250219'),
-  prompt: 'Explain quantum computing in simple terms.',
+  prompt: '簡単な言葉で量子コンピューティングを説明してください。',
 });
 ```
 
-### Gemini Model
+### Geminiモデル
 
 ```ts
 import { aihubmix } from '@aihubmix/ai-sdk-provider';
@@ -110,11 +108,11 @@ import { generateText } from 'ai';
 
 const { text } = await generateText({
   model: aihubmix('gemini-2.5-flash'),
-  prompt: 'Create a Python script to sort a list of numbers.',
+  prompt: '数字のリストをソートするPythonスクリプトを作成してください。',
 });
 ```
 
-### Image Generation
+### 画像生成
 
 ```ts
 import { aihubmix } from '@aihubmix/ai-sdk-provider';
@@ -122,11 +120,11 @@ import { generateImage } from 'ai';
 
 const { image } = await generateImage({
   model: aihubmix.image('gpt-image-1'),
-  prompt: 'A beautiful sunset over mountains',
+  prompt: '山々の上に美しい夕日',
 });
 ```
 
-### Embeddings
+### 埋め込み
 
 ```ts
 import { aihubmix } from '@aihubmix/ai-sdk-provider';
@@ -134,11 +132,11 @@ import { embed } from 'ai';
 
 const { embedding } = await embed({
   model: aihubmix.embedding('text-embedding-ada-002'),
-  value: 'Hello, world!',
+  value: 'こんにちは、世界！',
 });
 ```
 
-### Transcription
+### 転写
 
 ```ts
 import { aihubmix } from '@aihubmix/ai-sdk-provider';
@@ -150,7 +148,7 @@ const { text } = await transcribe({
 });
 ```
 
-### Stream Text
+### ストリーミングテキスト
 
 ```ts
 import { aihubmix } from '@aihubmix/ai-sdk-provider';
@@ -158,7 +156,7 @@ import { streamText } from 'ai';
 
 const result = streamText({
   model: aihubmix('gpt-3.5-turbo'),
-  prompt: 'Write a short story about a robot learning to paint.',
+  prompt: 'ロボットが絵を学ぶ短編小説を書いてください。',
   maxOutputTokens: 256,
   temperature: 0.3,
   maxRetries: 3,
@@ -170,11 +168,11 @@ for await (const textPart of result.textStream) {
   process.stdout.write(textPart);
 }
 
-console.log('\nUsage:', await result.usage);
-console.log('Finish reason:', await result.finishReason);
+console.log('\n使用量:', await result.usage);
+console.log('完了理由:', await result.finishReason);
 ```
 
-### Generate Object
+### オブジェクト生成
 
 ```ts
 import { aihubmix } from '@aihubmix/ai-sdk-provider';
@@ -195,15 +193,15 @@ const result = await generateObject({
       steps: z.array(z.string()),
     }),
   }),
-  prompt: 'Generate a lasagna recipe.',
+  prompt: 'ラザニアのレシピを生成してください。',
 });
 
 console.log(JSON.stringify(result.object.recipe, null, 2));
-console.log('Token usage:', result.usage);
-console.log('Finish reason:', result.finishReason);
+console.log('Token使用量:', result.usage);
+console.log('完了理由:', result.finishReason);
 ```
 
-### Stream Object
+### ストリーミングオブジェクト
 
 ```ts
 import { aihubmix } from '@aihubmix/ai-sdk-provider';
@@ -224,18 +222,18 @@ const result = await streamObject({
       steps: z.array(z.string()),
     }),
   }),
-  prompt: 'Generate a lasagna recipe.',
+  prompt: 'ラザニアのレシピを生成してください。',
 });
 
 for await (const objectPart of result.partialObjectStream) {
   console.log(objectPart);
 }
 
-console.log('Token usage:', result.usage);
-console.log('Final object:', result.object);
+console.log('Token使用量:', result.usage);
+console.log('最終オブジェクト:', result.object);
 ```
 
-### Embed Many
+### バッチ埋め込み
 
 ```ts
 import { aihubmix } from '@aihubmix/ai-sdk-provider';
@@ -244,17 +242,17 @@ import { embedMany } from 'ai';
 const { embeddings, usage } = await embedMany({
   model: aihubmix.embedding('text-embedding-3-small'),
   values: [
-    'sunny day at the beach',
-    'rainy afternoon in the city',
-    'snowy night in the mountains',
+    'ビーチでの晴れた日',
+    '街での雨の午後',
+    '山での雪の夜',
   ],
 });
 
-console.log('Embeddings:', embeddings);
-console.log('Usage:', usage);
+console.log('埋め込み:', embeddings);
+console.log('使用量:', usage);
 ```
 
-### Speech Synthesis
+### 音声合成
 
 ```ts
 import { aihubmix } from '@aihubmix/ai-sdk-provider';
@@ -262,17 +260,17 @@ import { generateSpeech } from 'ai';
 
 const { audio } = await generateSpeech({
   model: aihubmix.speech('tts-1'),
-  text: 'Hello, this is a test for speech synthesis.',
+  text: 'こんにちは、これは音声合成のテストです。',
 });
 
-// Save the audio file
+// 音声ファイルを保存
 await saveAudioFile(audio);
-console.log('Audio generated successfully:', audio);
+console.log('音声生成成功:', audio);
 ```
 
-### Tools
+### ツール
 
-The Aihubmix provider supports various tools including web search:
+Aihubmix providerはウェブ検索を含む様々なツールをサポートしています：
 
 ```ts
 import { aihubmix } from '@aihubmix/ai-sdk-provider';
@@ -280,7 +278,7 @@ import { generateText } from 'ai';
 
 const { text } = await generateText({
   model: aihubmix('gpt-4'),
-  prompt: 'What are the latest developments in AI?',
+  prompt: 'AIの最新の進歩は何ですか？',
   tools: {
     webSearchPreview: aihubmix.tools.webSearchPreview({
       searchContextSize: 'high',
@@ -289,10 +287,9 @@ const { text } = await generateText({
 });
 ```
 
+## 追加リソース
 
-## Additional Resources
-
-- [Aihubmix Provider Repository](https://github.com/inferera/aihubmix)
-- [Aihubmix Documentation](https://docs.aihubmix.com/en)
-- [Aihubmix Dashboard](https://aihubmix.com)
-- [Aihubmix Cooperation](mailto:business@aihubmix.com)
+- [Aihubmix Provider リポジトリ](https://github.com/inferera/aihubmix)
+- [Aihubmix ドキュメント](https://docs.aihubmix.com/en)
+- [Aihubmix ダッシュボード](https://aihubmix.com)
+- [Aihubmix ビジネス協力](mailto:business@aihubmix.com)
