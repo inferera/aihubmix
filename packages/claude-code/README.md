@@ -1,43 +1,51 @@
 # Claude Code Router
 
-一个简化的 Claude Code 路由服务，支持多种 AI 模型。
+<div align="center">
+  <div style="margin-bottom: 20px;">
+    <a href="./README.zh.md" style="margin: 0 10px; padding: 8px 16px; background-color: #f0f0f0; color: #333; text-decoration: none; border-radius: 4px;">中文</a>
+    <a href="./README.md" style="margin: 0 10px; padding: 8px 16px; background-color: #007acc; color: white; text-decoration: none; border-radius: 4px;">English</a>
+    <a href="./README.ja.md" style="margin: 0 10px; padding: 8px 16px; background-color: #f0f0f0; color: #333; text-decoration: none; border-radius: 4px;">日本語</a>
+  </div>
+</div>
 
-## 功能特性
+A simplified Claude Code routing service that supports multiple AI models.
 
-- 🚀 简化的配置管理
-- 🔄 自动路由到不同的 AI 模型
-- ⚡ 快速启动和停止
-- 🔧 易于配置
+## Features
 
-## 安装
+- 🚀 Simplified configuration management
+- 🔄 Automatic routing to different AI models
+- ⚡ Fast startup and shutdown
+- 🔧 Easy configuration
 
-首先，请确保您已安装 Claude Code：
+## Installation
+
+First, make sure you have Claude Code installed:
 ```bash
 npm install -g @anthropic-ai/claude-code
-
 ```
-然后，安装 @aihubmix/claude-code：
+
+Then, install @aihubmix/claude-code:
 ```bash
 npm install -g @aihubmix/claude-code
 ```
 
-## 配置
+## Configuration
 
-现在支持两种配置方式，详细说明请查看 [CONFIGURATION.md](./CONFIGURATION.md)。
+Two configuration methods are now supported. For detailed instructions, see [CONFIGURATION.md](./CONFIGURATION.md).
 
-### 1. 环境变量配置（推荐）
+### 1. Environment Variables (Recommended)
 
 ```bash
 export AIHUBMIX_API_KEY="your-api-key-here"
-export HOST="127.0.0.1"  # 可选
-export PORT="3456"        # 可选
-export LOG="true"         # 可选
-export API_TIMEOUT_MS="30000"  # 可选
+export HOST="127.0.0.1"  # Optional
+export PORT="3456"        # Optional
+export LOG="true"         # Optional
+export API_TIMEOUT_MS="30000"  # Optional
 ```
 
-### 2. 配置文件
+### 2. Configuration File
 
-配置文件位于 `~/.aihubmix-claude-code/config.json`：
+Configuration file located at `~/.aihubmix-claude-code/config.json`:
 
 ```json
 {
@@ -57,57 +65,55 @@ export API_TIMEOUT_MS="30000"  # 可选
 }
 ```
 
-**注意**: 环境变量的优先级高于配置文件。
+**Note**: Environment variables take precedence over configuration files.
 
+## Usage
 
-
-## 使用方法
-
-### 启动服务
+### Start Service
 
 ```bash
 acc start
 ```
 
-### 停止服务
+### Stop Service
 
 ```bash
 acc stop
 ```
 
-### 重启服务
+### Restart Service
 
 ```bash
 acc restart
 ```
 
-### 查看状态
+### Check Status
 
 ```bash
 acc status
 ```
 
-### 执行代码命令
+### Execute Code Command
 
 ```bash
 acc code "Write a Hello World function"
 ```
 
-### 查看版本
+### Check Version
 
 ```bash
 acc version
 ```
 
-### 查看帮助
+### Show Help
 
 ```bash
 acc help
 ```
 
-## 路由规则
+## Routing Rules
 
-### 默认模型配置
+### Default Model Configuration
 
 ```json
 {
@@ -120,17 +126,17 @@ acc help
 }
 ```
 
-### 路由逻辑
+### Routing Logic
 
-- **默认**: 使用 `claude-sonnet-4-20250514` 模型
-- **背景任务**: 当模型为 `claude-3-5-haiku` 时，使用 `claude-sonnet-4-20250514` 模型
-- **思考任务**: 当请求包含 `thinking` 参数时，使用 `claude-sonnet-4-20250514` 模型
-- **长上下文**: 当 token 数超过 60000 时，使用 `gpt-4.1` 模型
-- **网络搜索**: 当请求包含 `web_search` 工具时，使用 `gemini-2.0-flash-search` 模型
+- **Default**: Uses `claude-sonnet-4-20250514` model
+- **Background Tasks**: Uses `claude-sonnet-4-20250514` model when the model is `claude-3-5-haiku`
+- **Thinking Tasks**: Uses `claude-sonnet-4-20250514` model when the request contains `thinking` parameter
+- **Long Context**: Uses `gpt-4.1` model when token count exceeds 60000
+- **Web Search**: Uses `gemini-2.0-flash-search` model when the request contains `web_search` tools
 
-### 自定义路由配置
+### Custom Router Configuration
 
-你可以在配置文件中自定义 `Router` 部分来覆盖默认的模型配置：
+You can customize the `Router` section in the configuration file to override default model configurations:
 
 ```json
 {
@@ -145,12 +151,11 @@ acc help
 }
 ```
 
-#### Router 配置项说明
+#### Router Configuration Items
 
-- **default**: 默认使用的模型
-- **background**: 背景任务使用的模型
-- **think**: 思考任务使用的模型  
-- **longContext**: 长上下文任务使用的模型
-- **longContextThreshold**: 触发长上下文模型的 token 阈值（默认 60000）
-- **webSearch**: 网络搜索任务使用的模型
-
+- **default**: Default model to use
+- **background**: Model for background tasks
+- **think**: Model for thinking tasks  
+- **longContext**: Model for long context tasks
+- **longContextThreshold**: Token threshold to trigger long context model (default 60000)
+- **webSearch**: Model for web search tasks
