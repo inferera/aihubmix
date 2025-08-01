@@ -7,11 +7,13 @@
     "dev": "tsx ai-sdk-provider/index.ts",
     "test": "tsx ai-sdk-provider/index.ts",
     "test:ai-sdk-provider": "tsx ai-sdk-provider/index.ts",
+    "test:claude-code": "tsx claude-code/index.ts",
     "build": "tsc",
     "start": "node dist/ai-sdk-provider.js"
   },
   "dependencies": {
     "@aihubmix/ai-sdk-provider": "workspace:*",
+    "@aihubmix/claude-code": "workspace:*",
     "ai": "5.0.0-beta.25",
     "dotenv": "^16.6.1",
     "image-type": "^5.2.0",
