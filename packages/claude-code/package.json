@@ -34,11 +34,18 @@
     "shx": "^0.4.0",
     "typescript": "^5.8.2"
   },
+  "engines": {
+    "node": ">=18"
+  },
   "publishConfig": {
-    "ignore": [
-      "!build/",
-      "src/",
-      "screenshots/"
-    ]
+    "access": "public"
+  },
+  "homepage": "https://aihubmix.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inferera/aihubmix.git"
+  },
+  "bugs": {
+    "url": "https://github.com/inferera/aihubmix/issues"
   }
 }
