@@ -174,12 +174,18 @@ async function main() {
       const cliPath = join(__dirname, "cli.js");
       const startProcess = spawn("node", [cliPath, "start"], {
         detached: true,
-        stdio: "ignore",
+        stdio: "pipe", // 改为pipe以便捕获错误
       });
 
       startProcess.on("error", (error) => {
         console.error("Failed to start service:", error.message);
         process.exit(1);
+      });
+
+      // 捕获启动过程中的错误
+      startProcess.stderr.on("data", (data) => {
+        const errorMsg = data.toString();
+        console.error("Service startup error:", errorMsg);
       });
 
       startProcess.unref();
@@ -188,6 +194,7 @@ async function main() {
         console.log("✅ Service restarted successfully.");
       } else {
         console.error("Service restart timeout.");
+        console.error("Please check if API_KEY is properly configured.");
         process.exit(1);
       }
       break;

@@ -4,8 +4,9 @@ import {
   Tool,
 } from "../types/index";
 import { get_encoding } from "tiktoken";
-import { ROUTER } from "../constants";
+import { DEFAULT_ROUTER } from "../constants";
 import { log } from "../utils/log";
+import { Router } from "../types/index";
 
 const enc = get_encoding("cl100k_base");
 
@@ -65,41 +66,48 @@ const calculateTokenCount = (
   return tokenCount;
 };
 
-const getUseModel = async (req: any, tokenCount: number, config: any) => {
+const getUseModel = async (req: any, tokenCount: number, router: Router) => {
   if (req.body.model.includes(",")) {
     return req.body.model;
   }
   // if tokenCount is greater than the configured threshold, use the long context model
-  const longContextThreshold = ROUTER.longContextThreshold || 60000;
-  if (tokenCount > longContextThreshold && ROUTER.longContext) {
+  const longContextThreshold = router.longContextThreshold || 60000;
+  if (tokenCount > longContextThreshold && router.longContext) {
     log("Using long context model due to token count:", tokenCount, "threshold:", longContextThreshold);
-    return ROUTER.longContext;
+    return router.longContext;
   }
   // If the model is claude-3-5-haiku, use the background model
   if (
     req.body.model?.startsWith("claude-3-5-haiku") &&
-    ROUTER.background
+    router.background
   ) {
     log("Using background model for ", req.body.model);
-    return ROUTER.background;
+    return router.background;
   }
   // if exits thinking, use the think model
-  if (req.body.thinking && ROUTER.think) {
+  if (req.body.thinking && router.think) {
     log("Using think model for ", req.body.thinking);
-    return ROUTER.think;
+    return router.think;
   }
   if (
     Array.isArray(req.body.tools) &&
     req.body.tools.some((tool: any) => tool.type?.startsWith("web_search")) &&
-    ROUTER.webSearch
+    router.webSearch
   ) {
-    return ROUTER.webSearch;
+    return router.webSearch;
   }
-  return ROUTER!.default;
+  return router!.default;
 };
 
 export const router = async (req: any, _res: any, config: any) => {
   const { messages, system = [], tools }: MessageCreateParamsBase = req.body;
+
+  const router = Object.assign({}, DEFAULT_ROUTER, config?.Router || {});
+  Object.entries(router).forEach(([key, value]) => {
+    router[key] = 'aihubmix,' + value
+  });
+  console.log('router+++++++++', router)
+  console.log('config+++++++++', config)
   try {
     const tokenCount = calculateTokenCount(
       messages as MessageParam[],
@@ -107,11 +115,11 @@ export const router = async (req: any, _res: any, config: any) => {
       tools as Tool[]
     );
 
-    let model = await getUseModel(req, tokenCount, config);
+    let model = await getUseModel(req, tokenCount, router);
     req.body.model = model;
   } catch (error: any) {
     log("Error in router middleware:", error.message);
-    req.body.model = ROUTER!.default;
+    req.body.model = router!.default;
   }
   return;
 }; 

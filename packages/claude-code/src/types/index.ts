@@ -39,6 +39,7 @@ export interface Config {
   API_TIMEOUT_MS?: number;
   HOST?: string;
   PORT?: number;
+  Router?: Router;
 }
 
 // 服务器相关类型

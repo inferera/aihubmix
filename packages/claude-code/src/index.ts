@@ -43,9 +43,18 @@ async function run(options: RunOptions = {}) {
 
   await initializeClaudeConfig();
   await initDir();
+  
+  // Initialize config (will try config file first, then environment variables)
   const config = await initConfig();
+  
+  // Log configuration source
+  if (process.env.AIHUBMIX_API_KEY) {
+    console.log("✅ Using API_KEY from environment variable");
+  } else {
+    console.log("✅ Using API_KEY from config file");
+  }
+  
   let HOST = config.HOST || "127.0.0.1";
-
   const port = config.PORT || 3456;
 
   // Save the PID of the background process
@@ -63,7 +72,8 @@ async function run(options: RunOptions = {}) {
     cleanupPidFile();
     process.exit(0);
   });
-  console.log(HOST)
+  
+  console.log(`🚀 Starting server on ${HOST}:${port}`);
 
   // Use port from environment variable if set (for background process)
   const servicePort = process.env.SERVICE_PORT

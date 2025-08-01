@@ -11,59 +11,55 @@
 
 ## 安装
 
+首先，请确保您已安装 Claude Code：
 ```bash
-npm install @aihubmix/claude-code
+npm install -g @anthropic-ai/claude-code
+
+```
+然后，安装 @aihubmix/claude-code：
+```bash
+npm install -g @aihubmix/claude-code
 ```
 
 ## 配置
 
-### 1. 设置环境变量
+现在支持两种配置方式，详细说明请查看 [CONFIGURATION.md](./CONFIGURATION.md)。
+
+### 1. 环境变量配置（推荐）
 
 ```bash
 export AIHUBMIX_API_KEY="your-api-key-here"
+export HOST="127.0.0.1"  # 可选
+export PORT="3456"        # 可选
+export LOG="true"         # 可选
+export API_TIMEOUT_MS="30000"  # 可选
 ```
 
 ### 2. 配置文件
 
-配置文件位于 `~/.aihubmix-claude-code/config.json`，包含以下内容：
+配置文件位于 `~/.aihubmix-claude-code/config.json`：
 
 ```json
 {
+  "API_KEY": "your-api-key-here",
+  "HOST": "127.0.0.1",
+  "PORT": 3456,
   "LOG": true,
-  "API_TIMEOUT_MS": 600000,
-  "Providers": [
-    {
-      "name": "aihubmix",
-      "api_base_url": "https://aihubmix.com/v1/chat/completions",
-      "api_key": "",
-      "models": [
-        "Z/glm-4.5",
-        "claude-opus-4-20250514",
-        "gemini-2.5-pro",
-        "gemini-2.5-flash",
-        "gemini-2.5-pro-preview",
-        "deepseek-reasoner",
-        "deepseek-chat",
-        "DeepSeek-R1",
-        "DeepSeek-V3",
-        "deepseek-chat",
-        "gpt-4o-mini",
-        "gpt-4.1"
-      ]
-    }
-  ],
+  "API_TIMEOUT_MS": 30000,
   "Router": {
-    "default": "aihubmix,gpt-4.1",
-    "background": "aihubmix,gpt-4o-mini",
-    "think": "aihubmix,deepseek-reasoner",
-    "longContext": "aihubmix,gemini-2.5-pro-preview",
+    "default": "claude-sonnet-4-20250514",
+    "background": "claude-sonnet-4-20250514",
+    "think": "claude-sonnet-4-20250514",
+    "longContext": "gpt-4.1",
     "longContextThreshold": 60000,
-    "webSearch": "aihubmix,gemini-2.5-flash"
+    "webSearch": "gemini-2.0-flash-search"
   }
 }
 ```
 
-**注意**: `api_key` 字段会从环境变量 `AIHUBMIX_API_KEY` 自动获取。
+**注意**: 环境变量的优先级高于配置文件。
+
+
 
 ## 使用方法
 
@@ -109,27 +105,52 @@ acc version
 acc help
 ```
 
-## API 端点
-
-- `POST /v1/messages` - 主要的消息处理端点
-- `GET /api/config` - 获取配置
-- `POST /api/config` - 保存配置
-- `POST /api/restart` - 重启服务
-
 ## 路由规则
 
-- **默认**: 使用 `gpt-4.1` 模型
-- **背景任务**: 使用 `gpt-4o-mini` 模型
-- **思考任务**: 使用 `deepseek-reasoner` 模型
-- **长上下文**: 使用 `gemini-2.5-pro-preview` 模型（当 token 数 > 60000）
-- **网络搜索**: 使用 `gemini-2.5-flash` 模型
+### 默认模型配置
 
-## 开发
+```json
+{
+  "default": "claude-sonnet-4-20250514",
+  "background": "claude-sonnet-4-20250514", 
+  "think": "claude-sonnet-4-20250514",
+  "longContext": "gpt-4.1",
+  "longContextThreshold": 60000,
+  "webSearch": "gemini-2.0-flash-search"
+}
+```
 
-```bash
-# 构建项目
-npm run build
+### 路由逻辑
 
-# 发布
-npm run release
-``` 
+- **默认**: 使用 `claude-sonnet-4-20250514` 模型
+- **背景任务**: 当模型为 `claude-3-5-haiku` 时，使用 `claude-sonnet-4-20250514` 模型
+- **思考任务**: 当请求包含 `thinking` 参数时，使用 `claude-sonnet-4-20250514` 模型
+- **长上下文**: 当 token 数超过 60000 时，使用 `gpt-4.1` 模型
+- **网络搜索**: 当请求包含 `web_search` 工具时，使用 `gemini-2.0-flash-search` 模型
+
+### 自定义路由配置
+
+你可以在配置文件中自定义 `Router` 部分来覆盖默认的模型配置：
+
+```json
+{
+  "Router": {
+    "default": "your-custom-model",
+    "background": "your-background-model", 
+    "think": "your-thinking-model",
+    "longContext": "your-long-context-model",
+    "longContextThreshold": 50000,
+    "webSearch": "your-web-search-model"
+  }
+}
+```
+
+#### Router 配置项说明
+
+- **default**: 默认使用的模型
+- **background**: 背景任务使用的模型
+- **think**: 思考任务使用的模型  
+- **longContext**: 长上下文任务使用的模型
+- **longContextThreshold**: 触发长上下文模型的 token 阈值（默认 60000）
+- **webSearch**: 网络搜索任务使用的模型
+

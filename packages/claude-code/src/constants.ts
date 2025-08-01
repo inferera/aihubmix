@@ -11,11 +11,11 @@ export const PID_FILE = path.join(HOME_DIR, '.aihubmix-claude-code.pid');
 
 export const REFERENCE_COUNT_FILE = path.join(os.tmpdir(), "claude-code-reference-count.txt");
 
-export const ROUTER = {
-  default: "aihubmix,claude-3-5-sonnet-20241022",
-  background: "aihubmix,o4-mini",
-  think: "aihubmix,deepseek-reasoner",
-  longContext: "openaihubmix,gemini-2.5-pro-preview",
-  longContextThreshold: 60000,
-  webSearch: "aihubmix,gemini-2.5-flash",
-};
+export const DEFAULT_ROUTER = {
+  "default": "claude-sonnet-4-20250514",
+  "background": "claude-sonnet-4-20250514",
+  "think": "claude-sonnet-4-20250514",
+  "longContext": "gpt-4.1",
+  "longContextThreshold": 60000,
+  "webSearch": "gemini-2.0-flash-search"
+}

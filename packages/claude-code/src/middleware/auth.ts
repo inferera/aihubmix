@@ -1,33 +1,15 @@
 import { FastifyRequest, FastifyReply } from "fastify";
+import { log } from "../utils/log";
 
 export const apiKeyAuth =
   (config: any) =>
   (req: FastifyRequest, reply: FastifyReply, done?: () => void) => {
+    // 跳过API key验证，因为这个服务是一个透明的代理
+    // 服务器会使用配置的API key来调用AIHubMix的API
     if (["/", "/health"].includes(req.url) || req.url.startsWith("/ui")) {
       return done?.();
     }
-    const apiKey = config.APIKEY;
-
-    if (!apiKey) {
-      return done?.();
-    }
-
-    const authKey: string =
-      (req.headers.authorization || req.headers["x-api-key"]) as string;
-    if (!authKey) {
-      reply.status(401).send("APIKEY is missing");
-      return;
-    }
-    let token = "";
-    if (authKey.startsWith("Bearer")) {
-      token = authKey.split(" ")[1];
-    } else {
-      token = authKey;
-    }
-    if (token !== apiKey) {
-      reply.status(401).send("Invalid API key");
-      return;
-    }
-
+    
+    // 对于其他请求，直接通过，不需要验证客户端API key
     done?.();
   };

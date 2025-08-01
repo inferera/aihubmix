@@ -1,8 +1,23 @@
 import Server from "@musistudio/llms";
 import { readConfigFile, writeConfigFile } from "../config";
 import { ServerConfig } from "../types/index";
+import { existsSync } from "fs";
 
 export const createServer = (config: ServerConfig): Server => {
+  // 确保配置文件存在，避免@musistudio/llms包显示错误
+  if (!existsSync(config.jsonPath)) {
+    // 创建默认配置文件
+    const defaultConfig = {
+      HOST: config.initialConfig.HOST || "127.0.0.1",
+      PORT: config.initialConfig.PORT || 3456,
+      LOG_FILE: config.initialConfig.LOG_FILE || "",
+    };
+    
+    // 写入默认配置文件
+    const fs = require("fs");
+    fs.writeFileSync(config.jsonPath, JSON.stringify(defaultConfig, null, 2));
+  }
+
   const server = new Server({
     jsonPath: config.jsonPath,
     initialConfig: config.initialConfig,

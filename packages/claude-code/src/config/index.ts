@@ -39,7 +39,7 @@ const question = (query: string): Promise<string> => {
   });
 };
 
-export const readConfigFile = async (): Promise<Config> => {
+export const readConfigFile = async (): Promise<Config | null> => {
   try {
     const config = await fs.readFile(CONFIG_FILE, "utf-8");
     try {
@@ -49,12 +49,11 @@ export const readConfigFile = async (): Promise<Config> => {
       console.error(`Failed to parse config file at ${CONFIG_FILE}`);
       console.error("Error details:", (parseError as Error).message);
       console.error("Please check your config file syntax.");
-      process.exit(1);
+      return null;
     }
   } catch (readError: any) {
-    console.error(`Failed to read config file at ${CONFIG_FILE}`);
-    console.error("Error details:", readError.message);
-    process.exit(1);
+    // Config file doesn't exist or can't be read, return null instead of exiting
+    return null;
   }
 };
 
@@ -103,7 +102,33 @@ export const writeConfigFile = async (config: Config) => {
 };
 
 export const initConfig = async (): Promise<Config> => {
-  const config = await readConfigFile();
-  Object.assign(process.env, config);
-  return config;
+  // First try to read from config file
+  const fileConfig = await readConfigFile();
+  
+  // Create default config with environment variables
+  const envConfig: Config = {
+    API_KEY: process.env.AIHUBMIX_API_KEY || "",
+    LOG: process.env.LOG === "true",
+    API_TIMEOUT_MS: process.env.API_TIMEOUT_MS ? parseInt(process.env.API_TIMEOUT_MS) : undefined,
+    HOST: process.env.HOST,
+    PORT: process.env.PORT ? parseInt(process.env.PORT) : 3456,
+  };
+
+  // Merge file config with env config (env takes precedence)
+  const finalConfig = {
+    ...envConfig,
+    ...fileConfig,
+  };
+
+  // Validate that we have an API_KEY
+  if (!finalConfig.API_KEY) {
+    console.error("❌ API_KEY is required. Please set it in your config file or environment variable.");
+    console.error("You can set it via:");
+    console.error("1. Environment variable: export AIHUBMIX_API_KEY=your_api_key");
+    console.error("2. Config file: Create a config.json file with your API_KEY");
+    process.exit(1);
+  }
+
+  Object.assign(process.env, finalConfig);
+  return finalConfig;
 }; 
