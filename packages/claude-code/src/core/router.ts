@@ -4,6 +4,7 @@ import {
   Tool,
 } from "../types/index";
 import { get_encoding } from "tiktoken";
+import { ROUTER } from "../constants";
 import { log } from "../utils/log";
 
 const enc = get_encoding("cl100k_base");
@@ -69,32 +70,32 @@ const getUseModel = async (req: any, tokenCount: number, config: any) => {
     return req.body.model;
   }
   // if tokenCount is greater than the configured threshold, use the long context model
-  const longContextThreshold = config.Router.longContextThreshold || 60000;
-  if (tokenCount > longContextThreshold && config.Router.longContext) {
+  const longContextThreshold = ROUTER.longContextThreshold || 60000;
+  if (tokenCount > longContextThreshold && ROUTER.longContext) {
     log("Using long context model due to token count:", tokenCount, "threshold:", longContextThreshold);
-    return config.Router.longContext;
+    return ROUTER.longContext;
   }
   // If the model is claude-3-5-haiku, use the background model
   if (
     req.body.model?.startsWith("claude-3-5-haiku") &&
-    config.Router.background
+    ROUTER.background
   ) {
     log("Using background model for ", req.body.model);
-    return config.Router.background;
+    return ROUTER.background;
   }
   // if exits thinking, use the think model
-  if (req.body.thinking && config.Router.think) {
+  if (req.body.thinking && ROUTER.think) {
     log("Using think model for ", req.body.thinking);
-    return config.Router.think;
+    return ROUTER.think;
   }
   if (
     Array.isArray(req.body.tools) &&
     req.body.tools.some((tool: any) => tool.type?.startsWith("web_search")) &&
-    config.Router.webSearch
+    ROUTER.webSearch
   ) {
-    return config.Router.webSearch;
+    return ROUTER.webSearch;
   }
-  return config.Router!.default;
+  return ROUTER!.default;
 };
 
 export const router = async (req: any, _res: any, config: any) => {
@@ -106,22 +107,11 @@ export const router = async (req: any, _res: any, config: any) => {
       tools as Tool[]
     );
 
-    let model;
-    if (config.CUSTOM_ROUTER_PATH) {
-      try {
-        const customRouter = require(config.CUSTOM_ROUTER_PATH);
-        model = await customRouter(req, config);
-      } catch (e: any) {
-        log("failed to load custom router", e.message);
-      }
-    }
-    if (!model) {
-      model = await getUseModel(req, tokenCount, config);
-    }
+    let model = await getUseModel(req, tokenCount, config);
     req.body.model = model;
   } catch (error: any) {
     log("Error in router middleware:", error.message);
-    req.body.model = config.Router!.default;
+    req.body.model = ROUTER!.default;
   }
   return;
 }; 

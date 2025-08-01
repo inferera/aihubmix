@@ -6,7 +6,6 @@ import { initConfig, initDir } from "./config";
 import { createServer } from "./services/server";
 import { router } from "./core/router";
 import { apiKeyAuth } from "./middleware/auth";
-import { log } from './utils/log'
 import {
   cleanupPidFile,
   isServiceRunning,
@@ -45,14 +44,7 @@ async function run(options: RunOptions = {}) {
   await initializeClaudeConfig();
   await initDir();
   const config = await initConfig();
-  let HOST = config.HOST;
-
-  if (config.HOST && !config.APIKEY) {
-    HOST = "127.0.0.1";
-    console.warn(
-      "⚠️ API key is not set. HOST is forced to 127.0.0.1."
-    );
-  }
+  let HOST = config.HOST || "127.0.0.1";
 
   const port = config.PORT || 3456;
 
@@ -81,8 +73,14 @@ async function run(options: RunOptions = {}) {
   const server = createServer({
     jsonPath: CONFIG_FILE,
     initialConfig: {
-      // ...config,
-      providers: config.Providers,
+      providers: [
+        {
+          name: "aihubmix",
+          api_base_url: "https://aihubmix.com/v1/chat/completions",
+          api_key: config.API_KEY,
+          models: ["Z/glm-4.5", "claude-3-5-sonnet-20241022", "gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.5-pro-preview", "deepseek-reasoner", "deepseek-chat", "DeepSeek-R1", "DeepSeek-V3", "deepseek-chat", "gpt-4o-mini", "gpt-4.1", "claude-opus-4-20250514"],
+        }
+      ],
       HOST: HOST,
       PORT: servicePort,
       LOG_FILE: join(

@@ -34,14 +34,11 @@ export interface Router {
 }
 
 export interface Config {
+  API_KEY: string;
   LOG?: boolean;
   API_TIMEOUT_MS?: number;
   HOST?: string;
   PORT?: number;
-  APIKEY?: string;
-  Providers: Provider[];
-  Router: Router;
-  CUSTOM_ROUTER_PATH?: string;
 }
 
 // 服务器相关类型
