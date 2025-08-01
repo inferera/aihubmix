@@ -7,6 +7,7 @@ import {
   CONFIG_FILE,
   HOME_DIR,
   PLUGINS_DIR,
+  DEFAULT_ROUTER,
 } from "../constants";
 
 const ensureDir = async (dir_path: string) => {
@@ -97,7 +98,14 @@ export const backupConfigFile = async (): Promise<string | null> => {
 
 export const writeConfigFile = async (config: Config) => {
   await ensureDir(HOME_DIR);
-  const configWithComment = `${JSON.stringify(config, null, 2)}`;
+  
+  // Ensure Router configuration is included
+  const configWithRouter = {
+    ...config,
+    Router: config.Router || DEFAULT_ROUTER,
+  };
+  
+  const configWithComment = `${JSON.stringify(configWithRouter, null, 2)}`;
   await fs.writeFile(CONFIG_FILE, configWithComment);
 };
 
@@ -112,6 +120,7 @@ export const initConfig = async (): Promise<Config> => {
     API_TIMEOUT_MS: process.env.API_TIMEOUT_MS ? parseInt(process.env.API_TIMEOUT_MS) : undefined,
     HOST: process.env.HOST,
     PORT: process.env.PORT ? parseInt(process.env.PORT) : 3456,
+    Router: DEFAULT_ROUTER,
   };
 
   // Merge file config with env config (env takes precedence)

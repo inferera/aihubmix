@@ -2,6 +2,7 @@ import Server from "@musistudio/llms";
 import { readConfigFile, writeConfigFile } from "../config";
 import { ServerConfig } from "../types/index";
 import { existsSync } from "fs";
+import { DEFAULT_ROUTER } from "../constants";
 
 export const createServer = (config: ServerConfig): Server => {
   // 确保配置文件存在，避免@musistudio/llms包显示错误
@@ -11,6 +12,7 @@ export const createServer = (config: ServerConfig): Server => {
       HOST: config.initialConfig.HOST || "127.0.0.1",
       PORT: config.initialConfig.PORT || 3456,
       LOG_FILE: config.initialConfig.LOG_FILE || "",
+      Router: DEFAULT_ROUTER,
     };
     
     // 写入默认配置文件

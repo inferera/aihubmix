@@ -56,7 +56,7 @@ export API_TIMEOUT_MS="30000"  # 可选
   "API_TIMEOUT_MS": 30000,
   "Router": {
     "default": "claude-sonnet-4-20250514",
-    "background": "claude-sonnet-4-20250514",
+    "background": "claude-3-5-haiku-20241022",
     "think": "claude-sonnet-4-20250514",
     "longContext": "gpt-4.1",
     "longContextThreshold": 60000,
@@ -120,7 +120,7 @@ acc help
 ```json
 {
   "default": "claude-sonnet-4-20250514",
-  "background": "claude-sonnet-4-20250514", 
+  "background": "claude-3-5-haiku-20241022", 
   "think": "claude-sonnet-4-20250514",
   "longContext": "gpt-4.1",
   "longContextThreshold": 60000,

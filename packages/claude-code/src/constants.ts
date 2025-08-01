@@ -13,7 +13,7 @@ export const REFERENCE_COUNT_FILE = path.join(os.tmpdir(), "claude-code-referenc
 
 export const DEFAULT_ROUTER = {
   "default": "claude-sonnet-4-20250514",
-  "background": "claude-sonnet-4-20250514",
+  "background": "claude-3-5-haiku-20241022",
   "think": "claude-sonnet-4-20250514",
   "longContext": "gpt-4.1",
   "longContextThreshold": 60000,
