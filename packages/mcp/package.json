@@ -1,0 +1,59 @@
+{
+  "name": "@aihubmix/mcp",
+  "version": "0.0.2",
+  "description": "Custom MCP Server with file operations and API tools",
+  "main": "build/server.js",
+  "type": "module",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "bin": {
+    "aihubmix-mcp": "build/server.js"
+  },
+  "files": [
+    "build",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc && chmod 755 build/server.js",
+    "start": "node --experimental-specifier-resolution=node build/server.js",
+    "dev": "tsx src/server.ts",
+    "test": "vitest",
+    "lint": "eslint src/**/*.ts",
+    "clean": "rm -rf build",
+    "inspect": "npx @modelcontextprotocol/inspector",
+    "prepack": "npm run build",
+    "release": "npm run build && npm publish"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.4.0",
+    "form-data": "^4.0.3",
+    "node-fetch": "^3.0.0",
+    "winston": "^3.11.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/winston": "^2.4.4",
+    "eslint": "^8.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "server",
+    "ai",
+    "tools"
+  ],
+  "author": "chenxue",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inferera/aihubmix.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

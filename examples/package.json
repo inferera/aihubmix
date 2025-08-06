@@ -8,6 +8,7 @@
     "test": "tsx ai-sdk-provider/index.ts",
     "test:ai-sdk-provider": "tsx ai-sdk-provider/index.ts",
     "test:claude-code": "tsx claude-code/index.ts",
+    "test:mcp": "tsx mcp/index.ts",
     "build": "tsc",
     "start": "node dist/ai-sdk-provider.js"
   },
@@ -17,6 +18,7 @@
     "ai": "5.0.0-beta.25",
     "dotenv": "^16.6.1",
     "image-type": "^5.2.0",
+    "node-fetch": "^3.0.0",
     "optional": "^0.1.4",
     "sharp": "^0.33.5",
     "terminal-image": "^3.1.1",
