@@ -21,7 +21,7 @@ async function pollForCompletion(pollingUrl: string, apiKey: string, maxAttempts
       const data = await response.json() as any;
       
       // Check if task is completed
-      if (data.status === "succeeded" || data.status === "completed") {
+      if (data.status === "succeeded" || data.status === "completed" || data.status === "Ready") {
         const contents: any[] = [];
         
         // Handle the completed result
@@ -63,6 +63,14 @@ async function pollForCompletion(pollingUrl: string, apiKey: string, maxAttempts
               }
             }
           }
+        }
+        
+        // Handle new format with result.sample
+        if (data.result && data.result.sample) {
+          contents.push({
+            type: "text",
+            text: data.result.sample,
+          });
         }
         
         return contents;
@@ -311,12 +319,6 @@ export const paintingTools: Record<string, Tool> = {
                   text: `Polling URL: ${item.polling_url} (Error: ${error instanceof Error ? error.message : String(error)})`,
                 });
               }
-            }
-            if (item && typeof item === "object" && item.taskId) {
-              contents.push({
-                type: "text",
-                text: `Task ID: ${item.taskId}`,
-              });
             }
           }
         }
