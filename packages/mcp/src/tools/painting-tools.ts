@@ -105,7 +105,7 @@ export const paintingTools: Record<string, Tool> = {
             "google/imagen-4.0-ultra-generate-preview-06-06",
             "google/imagen-4.0-generate-preview-06-06",
             "bfl/flux-kontext-max",
-            "bfl/flux-Kontext-pro",
+            "bfl/flux-kontext-pro",
           ],
           default: "opanai/gpt-image-1",
           description: "选择要使用的模型",
