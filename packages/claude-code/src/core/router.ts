@@ -106,8 +106,6 @@ export const router = async (req: any, _res: any, config: any) => {
   Object.entries(router).forEach(([key, value]) => {
     router[key] = 'aihubmix,' + value
   });
-  console.log('router+++++++++', router)
-  console.log('config+++++++++', config)
   try {
     const tokenCount = calculateTokenCount(
       messages as MessageParam[],
@@ -116,6 +114,13 @@ export const router = async (req: any, _res: any, config: any) => {
     );
 
     let model = await getUseModel(req, tokenCount, router);
+    if (model.startsWith('aihubmix,gpt-5') || model.startsWith('aihubmix,o')) {
+      req.body.max_completion_tokens = req.body.max_tokens
+      delete req.body.max_tokens
+    }
+    if (model.startsWith('aihubmix,gpt-5') && model !== 'aihubmix,gpt-5-chat-latest') {
+      delete req.body.temperature
+    }
     req.body.model = model;
   } catch (error: any) {
     log("Error in router middleware:", error.message);
