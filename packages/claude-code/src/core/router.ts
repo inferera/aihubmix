@@ -114,13 +114,30 @@ export const router = async (req: any, _res: any, config: any) => {
     );
 
     let model = await getUseModel(req, tokenCount, router);
-    if (model.startsWith('aihubmix,gpt-5') || model.startsWith('aihubmix,o')) {
+    
+    // 处理 GPT-5 模型的 reasoning 级别
+    if (model.startsWith('aihubmix,gpt-5')) {
+      // 检查是否有 reasoning 级别后缀
+      const reasoningMatch = model.match(/\((high|medium|low|minimal)\)/);
+      if (reasoningMatch) {
+        // 设置 reasoning_effort 参数
+        req.body.reasoning_effort = reasoningMatch[1];
+        log("Setting reasoning_effort to:", reasoningMatch[1]);
+        // 清理模型名，移除后缀
+        model = model.replace(/\((high|medium|low|minimal)\)/, '');
+      }
+      
+      req.body.max_completion_tokens = req.body.max_tokens
+      delete req.body.max_tokens
+      
+      if (model !== 'aihubmix,gpt-5-chat-latest') {
+        delete req.body.temperature
+      }
+    } else if (model.startsWith('aihubmix,o')) {
       req.body.max_completion_tokens = req.body.max_tokens
       delete req.body.max_tokens
     }
-    if (model.startsWith('aihubmix,gpt-5') && model !== 'aihubmix,gpt-5-chat-latest') {
-      delete req.body.temperature
-    }
+    
     req.body.model = model;
   } catch (error: any) {
     log("Error in router middleware:", error.message);
