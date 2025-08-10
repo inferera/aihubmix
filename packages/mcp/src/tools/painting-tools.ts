@@ -93,7 +93,7 @@ async function pollForCompletion(pollingUrl: string, apiKey: string, maxAttempts
 
 export const paintingTools: Record<string, Tool> = {
   image_generate: {
-    description: "**GPT-Image-1:** Exceptional in feature learning and transferability, offers stable multilingual text rendering, versatile style generation, precise adherence to complex instructions, extensive world knowledge, three common aspect ratios, multiple quality specifications, multi-reference image support, batch output, transparent backgrounds, and robust safety. Ideal for everyday creative work with an average generation speed of 2 minutes per image.**Imagen-4.0-Ultra-Generate-Preview-06–06:** High-quality, supports diverse styles and simple text rendering, five common aspect ratios, single image output per generation, currently English prompts only, no child images generated, supports batch output.**Imagen-4.0-Generate-Preview-06-06:** Creates high-quality, realistic images with simple text rendering and diverse styles at high speeds. Offers five common aspect ratios, 1-4 images per call, suitable for daily creative and content production. Currently English prompts only, no child images generated, supports batch output.**Flux-Kontext-Max:** Large-scale output with rich detail, supports complex scenes and reference images, extremely fast generation, diverse aspect ratios. Ideal for architecture and industrial design, cost-effective, supports batch output.**Flux-Kontext-Pro:** Strong contextual understanding, excellent detail rendition, diverse aspect ratios. Suitable for quick daily creative work, cost-effective, supports batch output.**Ideogram/V3:** Powerful text-to-image capabilities, strong multilingual understanding, rich artistic styles, outstanding design capabilities, supports creative variations and a wide range of aspect ratios, excels in ultra-wide formats. Supports reference images, localized editing, multi-image merging, background replacement, image expansion, and batch output.**Stability/Stable-Diffusion-3-5-Large:** Easy API integration, cost-effective, rich ecosystem. Suitable for fine-grained, controllable, standardized workflows, supports batch output.",
+    description: "openai/gpt-image-1:[Excellent feature learning and transfer capabilities, stable multilingual text rendering, supports multiple style generation, accurately follows complex instructions, rich world knowledge, 3 common aspect ratios, multiple quality specifications, supports multiple reference images, supports multiple outputs in single generation, supports transparent backgrounds, strict security protection, suitable for daily creative work, average generation speed 2 minutes/image]; bfl/FLUX.1-Kontext-pro:[Strong contextual understanding ability, good detail representation, supports rich aspect ratios, suitable for daily quick creation, high cost-effectiveness, supports multiple outputs in single generation];google/imagen-4.0-ultra-generate-preview-06-06:[High quality, supports diverse styles, supports simple text rendering, 5 common aspect ratios, generates only 1 image each time, currently supports only English prompts, does not generate children's images, supports multiple outputs in single generation];google/imagen-4.0-generate-preview-06-06:[Creates high-quality, realistic images, supports simple text rendering, diverse styles, fast generation speed, 5 common aspect ratios, can generate 1-4 images per call, suitable for daily creativity and content production, currently supports only English prompts, does not generate children's images, supports multiple outputs in single generation];ideogram/V3:[Strong text-to-image expressiveness, strong multilingual understanding capability, rich artistic styles, outstanding design capabilities, supports creative variants, supports rich aspect ratios, easily handles ultra-wide formats, supports reference images/local editing/multi-image fusion/background replacement/image extension, supports multiple outputs in single generation]",
     inputSchema: {
       type: "object",
       properties: {
@@ -101,11 +101,10 @@ export const paintingTools: Record<string, Tool> = {
           type: "string",
           enum: [
             "opanai/gpt-image-1",
-            "ideogram/V3",
+            "bfl/FLUX.1-Kontext-pro",
             "google/imagen-4.0-ultra-generate-preview-06-06",
             "google/imagen-4.0-generate-preview-06-06",
-            "bfl/flux-kontext-max",
-            "bfl/flux-kontext-pro",
+            "ideogram/V3",
           ],
           default: "opanai/gpt-image-1",
           description: "选择要使用的模型",
@@ -124,7 +123,7 @@ export const paintingTools: Record<string, Tool> = {
           type: "string",
           enum: ["1x1", "2x1", "1x2", "16x9", "9x16", "4x5", "5x4", "3x4", "4x3"],
           default: "1x1",
-          description: "图片宽高比例，仅 ideogram/V3 支持",
+          description: "图片宽高比例，ideogram/V3及flux 系列模型支持",
         },
         n: {
           type: "integer",
@@ -225,18 +224,14 @@ export const paintingTools: Record<string, Tool> = {
             input.aspect_ratio = aspect_ratio;
             break;
           case "opanai/gpt-image-1":
-          case "opanai/dall-e-3":
             input.n = n;
             input.size = size;
             input.quality = quality;
             input.moderation = moderation;
             input.background = background;
             break;
-          case "stability/Stable-Diffusion-3-5-Large":
-            input.n = n;
-            break;
-          case "google/imagen-3.0-generate-002":
-            input.numberOfImages = n;
+          case "bfl/FLUX.1-Kontext-pro":
+            input.aspect_ratio = aspect_ratio.replace("x", ":");
             break;
           default:
             // For other models, just use the prompt
