@@ -119,7 +119,7 @@ export const paintingTools = {
                     default: 1,
                     maximum: 10,
                     minimum: 1,
-                    description: "生成图片数量，opanai/gpt-image-1 支持",
+                    description: "生成图片数量，仅 opanai/gpt-image-1 支持",
                 },
                 size: {
                     type: "string",
@@ -185,6 +185,7 @@ export const paintingTools = {
                         break;
                     case "bfl/FLUX.1-Kontext-pro":
                         input.aspect_ratio = aspect_ratio.replace("x", ":");
+                        input.safety_tolerance = safety_tolerance;
                         break;
                     default:
                         // For other models, just use the prompt
