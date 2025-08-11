@@ -15,4 +15,4 @@ tsconfig.vitest-temp.json
 *.log
 *.local
 *.tsbuildinfo
-packages/claude-code/package-lock.json
+packages/*/package-lock.json
