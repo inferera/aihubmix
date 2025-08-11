@@ -19,6 +19,9 @@
 
 ## インストール
 
+**要件：**
+- Node.js >= 20
+
 まず、Claude Codeがインストールされていることを確認してください：
 ```bash
 npm install -g @anthropic-ai/claude-code

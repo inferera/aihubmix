@@ -19,6 +19,9 @@
 
 ## 安装
 
+**环境要求：**
+- Node.js >= 20
+
 首先，请确保您已安装 Claude Code：
 ```bash
 npm install -g @anthropic-ai/claude-code

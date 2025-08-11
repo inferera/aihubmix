@@ -19,6 +19,9 @@ A simplified Claude Code routing service that supports multiple AI models.
 
 ## Installation
 
+**Requirements:**
+- Node.js >= 20
+
 First, make sure you have Claude Code installed:
 ```bash
 npm install -g @anthropic-ai/claude-code
