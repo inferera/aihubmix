@@ -1,4 +1,5 @@
 import { spawn } from "child_process";
+import { platform } from "os";
 import {
   incrementReferenceCount,
   decrementReferenceCount,
@@ -19,12 +20,28 @@ export async function executeCodeCommand(args: string[] = []) {
   // Increment reference count when command starts
   incrementReferenceCount();
 
+  // Determine shell based on platform
+  const getShell = () => {
+    const currentPlatform = platform();
+    switch (currentPlatform) {
+      case "win32":
+        // On Windows, use cmd.exe or PowerShell
+        return process.env.COMSPEC || "cmd.exe";
+      case "darwin":
+        // On macOS, use bash
+        return "/bin/bash";
+      default:
+        // On Linux and other Unix-like systems, use bash
+        return "/bin/bash";
+    }
+  };
+
   // Execute claude command
   const claudePath = process.env.CLAUDE_PATH || "claude";
   const claudeProcess = spawn(claudePath, args, {
     env,
     stdio: "inherit",
-    shell: true,
+    shell: getShell(),
   });
 
   claudeProcess.on("error", (error) => {
