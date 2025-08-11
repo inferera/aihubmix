@@ -162,3 +162,29 @@ acc help
 - **longContextThreshold**: 触发长上下文模型的 token 阈值（默认 60000）
 - **webSearch**: 网络搜索任务使用的模型
 
+### GPT-5 Reasoning 级别支持
+
+GPT-5 模型现在支持不同的 reasoning effort 级别，您可以通过以下方式选择：
+
+- `gpt-5` - 使用默认的 medium 级别
+- `gpt-5(high)` - 高级别推理，最大化质量但速度较慢
+- `gpt-5(medium)` - 中级别推理，平衡质量和速度
+- `gpt-5(low)` - 低级别推理，更快的响应速度
+- `gpt-5(minimal)` - 最小推理，超低延迟场景
+
+#### 使用示例
+
+1. **在 Claude Code 中选择模型时**：
+   - 选择 `gpt-5(high)` 来进行深度思考任务
+   - 选择 `gpt-5(minimal)` 来进行快速简单任务
+
+2. **在配置文件中设置**：
+```json
+{
+  "Router": {
+    "think": "gpt-5(high)",  // 思考任务使用高级别推理
+    "default": "gpt-5"       // 默认使用中级别
+  }
+}
+```
+
