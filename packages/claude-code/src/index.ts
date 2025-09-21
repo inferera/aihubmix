@@ -484,7 +484,14 @@ async function run(options: RunOptions = {}) {
             "yi-vl-plus",
             "zai-org/GLM-4.5",
             "zai-org/GLM-4.5-Air"
-        ],
+          ],
+          transformer: {
+            use: [
+              ["anthropic", { UseBearer: false }],
+              "tooluse",                            // 启用工具调用支持
+              "reasoning"
+            ]
+          }
         }
       ],
       HOST: HOST,

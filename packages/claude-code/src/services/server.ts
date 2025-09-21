@@ -1,11 +1,11 @@
-import Server from "@musistudio/llms";
+import Server from "../llms/server";
 import { readConfigFile, writeConfigFile } from "../config";
 import { ServerConfig } from "../types/index";
 import { existsSync } from "fs";
 import { DEFAULT_ROUTER } from "../constants";
 
 export const createServer = (config: ServerConfig): Server => {
-  // 确保配置文件存在，避免@musistudio/llms包显示错误
+  // 确保配置文件存在，避免../llms/server包显示错误
   if (!existsSync(config.jsonPath)) {
     // 创建默认配置文件
     const defaultConfig = {
