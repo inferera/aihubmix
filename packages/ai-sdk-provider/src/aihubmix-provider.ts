@@ -17,6 +17,7 @@ import {
   TranscriptionModelV2,
   SpeechModelV2,
   TranscriptionModelV2CallOptions,
+  LanguageModelV2CallOptions,
 } from '@ai-sdk/provider';
 import { FetchFunction, loadApiKey } from '@ai-sdk/provider-utils';
 import { aihubmixTools } from './aihubmix-tools';
@@ -143,7 +144,34 @@ class AihubmixTranscriptionModel extends OpenAITranscriptionModel {
   }
 }
 
-export function createAihubmix(
+// 自定义 OpenAI 聊天模型类，修复空工具时的 tool_choice 问题
+class AihubmixOpenAIChatLanguageModel extends OpenAIChatLanguageModel {
+  constructor(modelId: string, settings: any) {
+    super(modelId, {
+      ...settings,
+      fetch: AihubmixOpenAIChatLanguageModel.createCustomFetch(settings.fetch),
+    });
+  }
+
+  private static createCustomFetch(originalFetch?: any) {
+    return async (url: string, options: any) => {
+      // 拦截请求并修复 tool_choice 问题
+      if (options?.body) {
+        try {
+          const body = JSON.parse(options.body);
+          if (body.tools && Array.isArray(body.tools) && body.tools.length === 0 && body.tool_choice) {
+            delete body.tool_choice;
+            options.body = JSON.stringify(body);
+          }
+        } catch (error) {
+          // 如果解析失败，继续使用原始请求
+        }
+      }
+      
+      return originalFetch ? originalFetch(url, options) : fetch(url, options);
+    };
+  }
+}export function createAihubmix(
   options: AihubmixProviderSettings = {},
 ): AihubmixProvider {
   const getHeaders = () => ({
@@ -209,7 +237,7 @@ export function createAihubmix(
       );
     }
 
-    return new OpenAIChatLanguageModel(deploymentName, {
+    return new AihubmixOpenAIChatLanguageModel(deploymentName, {
       provider: 'aihubmix.chat',
       url,
       headers: getHeaders,
@@ -273,6 +301,7 @@ export function createAihubmix(
       headers: getHeaders,
       fetch: options.fetch,
     });
+
   const provider = function (
     deploymentId: string,
     settings?: OpenAIProviderSettings,
