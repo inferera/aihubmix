@@ -17,7 +17,6 @@ import {
   TranscriptionModelV2,
   SpeechModelV2,
   TranscriptionModelV2CallOptions,
-  LanguageModelV2CallOptions,
 } from '@ai-sdk/provider';
 import { FetchFunction, loadApiKey } from '@ai-sdk/provider-utils';
 import { aihubmixTools } from './aihubmix-tools';
@@ -76,7 +75,6 @@ export interface AihubmixProvider extends ProviderV2 {
 
   tools: typeof aihubmixTools;
 }
-
 export interface AihubmixProviderSettings {
   apiKey?: string;
   fetch?: FetchFunction;
@@ -236,6 +234,16 @@ class AihubmixOpenAIChatLanguageModel extends OpenAIChatLanguageModel {
         },
       );
     }
+
+    if (deploymentName === "gpt-5-pro" || deploymentName === "gpt-5-codex") {
+      console.log('responses request', deploymentName);
+			return new OpenAIResponsesLanguageModel(deploymentName, {
+				provider: 'aihubmix.chat',
+				url,
+				headers: getHeaders,
+				fetch: options.fetch,
+			});
+		}
 
     return new AihubmixOpenAIChatLanguageModel(deploymentName, {
       provider: 'aihubmix.chat',
