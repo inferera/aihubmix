@@ -11,8 +11,10 @@
 
 **[Aihubmix 官方网站](https://aihubmix.com/)** | **[模型广场](https://aihubmix.com/models)**
 
-**[Aihubmix provider](https://v5.ai-sdk.dev/providers/community-providers/aihubmix)** 适用于 [AI SDK](https://ai-sdk.dev/docs)
+**[Aihubmix provider](https://sdk.vercel.ai/providers/community-providers/aihubmix)** 适用于 [AI SDK](https://ai-sdk.dev/docs)
 一个网关，无限模型；一站式请求：OpenAI、Claude、Gemini、DeepSeek、Qwen 以及超过 500 个 AI 模型。
+
+> **📦 版本 1.0.1** - 兼容 AI SDK v6
 
 ## 支持的功能
 
@@ -71,16 +73,18 @@ import { createAihubmix } from '@aihubmix/ai-sdk-provider';
 import { 
   generateText, 
   streamText, 
-  generateImage, 
+  experimental_generateImage as generateImage, 
   embed, 
   embedMany, 
   generateObject, 
   streamObject, 
-  generateSpeech, 
-  transcribe 
+  experimental_generateSpeech as generateSpeech, 
+  experimental_transcribe as transcribe 
 } from 'ai';
 import { z } from 'zod';
 ```
+
+> **注意**：`generateImage`、`generateSpeech` 和 `transcribe` 等 API 在 AI SDK v6 中仍为实验性功能。
 
 ### 生成文本
 

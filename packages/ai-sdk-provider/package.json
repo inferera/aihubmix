@@ -1,6 +1,6 @@
 {
   "name": "@aihubmix/ai-sdk-provider",
-  "version": "0.0.6",
+  "version": "1.0.1",
   "license": "Apache-2.0",
   "sideEffects": false,
   "main": "./dist/index.js",
@@ -31,11 +31,11 @@
     }
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "2.0.17",
-    "@ai-sdk/google": "2.0.15",
-    "@ai-sdk/openai": "2.0.32",
-    "@ai-sdk/provider": "2.0.0",
-    "@ai-sdk/provider-utils": "3.0.9",
+    "@ai-sdk/anthropic": "^3.0.0",
+    "@ai-sdk/google": "^3.0.0",
+    "@ai-sdk/openai": "^3.0.0",
+    "@ai-sdk/provider": "^3.0.0",
+    "@ai-sdk/provider-utils": "^4.0.0",
     "zod": "^4.0.0"
   },
   "devDependencies": {

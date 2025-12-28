@@ -1,4 +1,4 @@
-import { createProviderDefinedToolFactoryWithOutputSchema } from '@ai-sdk/provider-utils';
+import { createProviderToolFactoryWithOutputSchema } from '@ai-sdk/provider-utils';
 import { z } from 'zod';
 
 export const imageGenerationArgsSchema = z
@@ -87,7 +87,7 @@ type ImageGenerationArgs = {
 };
 
 const imageGenerationToolFactory =
-  createProviderDefinedToolFactoryWithOutputSchema<
+  createProviderToolFactoryWithOutputSchema<
     {},
     {
       /**
@@ -98,7 +98,6 @@ const imageGenerationToolFactory =
     ImageGenerationArgs
   >({
     id: 'aihubmix.image_generation',
-    name: 'image_generation',
     inputSchema: z.object({}),
     outputSchema: imageGenerationOutputSchema,
   });

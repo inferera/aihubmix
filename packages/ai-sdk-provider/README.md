@@ -11,8 +11,10 @@ Built-in app-code; using this method to request all models offers a 10% discount
 
 **[Aihubmix Official Website](https://aihubmix.com/)** | **[Model Square](https://aihubmix.com/models)**
 
-The **[Aihubmix provider](https://v5.ai-sdk.dev/providers/community-providers/aihubmix)** for the [AI SDK](https://ai-sdk.dev/docs)
+The **[Aihubmix provider](https://sdk.vercel.ai/providers/community-providers/aihubmix)** for the [AI SDK](https://ai-sdk.dev/docs)
 One Gateway, Infinite Models；one-stop request: OpenAI, Claude, Gemini, DeepSeek, Qwen, and over 500 AI models.
+
+> **📦 Version 1.0.1** - Compatible with AI SDK v6
 
 
 ## Supported Features
@@ -73,16 +75,18 @@ import { createAihubmix } from '@aihubmix/ai-sdk-provider';
 import { 
   generateText, 
   streamText, 
-  generateImage, 
+  experimental_generateImage as generateImage, 
   embed, 
   embedMany, 
   generateObject, 
   streamObject, 
-  generateSpeech, 
-  transcribe 
+  experimental_generateSpeech as generateSpeech, 
+  experimental_transcribe as transcribe 
 } from 'ai';
 import { z } from 'zod';
 ```
+
+> **Note**: Some APIs like `generateImage`, `generateSpeech`, and `transcribe` are still experimental in AI SDK v6.
 
 ### Generate Text
 

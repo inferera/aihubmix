@@ -38,9 +38,11 @@ One Gateway, Infinite Models；one-stop request: OpenAI, Claude, Gemini, DeepSee
 ### @aihubmix/ai-sdk-provider
 **AI SDK Provider包** - 为Vercel AI SDK提供统一的模型访问接口
 
+> **v1.0.1** - 兼容 AI SDK v6
+
 - **功能特性**：
   - 支持500+ AI模型统一访问
-  - 兼容Vercel AI SDK接口
+  - 兼容Vercel AI SDK v6接口
   - 自动模型路由和负载均衡
   - 统一的错误处理和重试机制
   - TypeScript类型支持

@@ -48,7 +48,7 @@ const testConfig = {
   },
   transcribe: {
     model: 'whisper-1',
-    audio: await readFile('../data/galileo.mp3'),
+    audio: await readFile('./data/galileo.mp3'),
   },
 };
 
@@ -250,7 +250,7 @@ async function testTranscribe(): Promise<boolean> {
   try {
     const { text, durationInSeconds } = await transcribe({
       model: aihubmix.transcription(testConfig.transcribe.model),
-      audio: await readFile('../data/galileo.mp3'),
+      audio: testConfig.transcribe.audio,
     });
   
     console.log('✅ transcribe 测试成功', text);

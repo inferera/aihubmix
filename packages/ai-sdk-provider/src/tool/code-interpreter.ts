@@ -1,4 +1,4 @@
-import { createProviderDefinedToolFactoryWithOutputSchema } from '@ai-sdk/provider-utils';
+import { createProviderToolFactoryWithOutputSchema } from '@ai-sdk/provider-utils';
 import { z } from 'zod';
 
 export const codeInterpreterInputSchema = z.object({
@@ -38,7 +38,7 @@ type CodeInterpreterArgs = {
 };
 
 export const codeInterpreterToolFactory =
-  createProviderDefinedToolFactoryWithOutputSchema<
+  createProviderToolFactoryWithOutputSchema<
     {
       /**
        * The code to run, or null if not available.
@@ -77,7 +77,6 @@ export const codeInterpreterToolFactory =
     CodeInterpreterArgs
   >({
     id: 'aihubmix.code_interpreter',
-    name: 'code_interpreter',
     inputSchema: codeInterpreterInputSchema,
     outputSchema: codeInterpreterOutputSchema,
   });

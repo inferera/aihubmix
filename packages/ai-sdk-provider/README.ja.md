@@ -11,8 +11,10 @@ app-codeが内蔵されており、この方法でモデルをリクエストす
 
 **[Aihubmix 公式サイト](https://aihubmix.com/)** | **[モデルスクエア](https://aihubmix.com/models)**
 
-[AI SDK](https://ai-sdk.dev/docs)用の **[Aihubmix provider](https://v5.ai-sdk.dev/providers/community-providers/aihubmix)**
+[AI SDK](https://ai-sdk.dev/docs)用の **[Aihubmix provider](https://sdk.vercel.ai/providers/community-providers/aihubmix)**
 一つのゲートウェイ、無限のモデル；ワンストップリクエスト：OpenAI、Claude、Gemini、DeepSeek、Qwen、そして500以上のAIモデル。
+
+> **📦 バージョン 1.0.1** - AI SDK v6 対応
 
 ## サポートされている機能
 
@@ -71,16 +73,18 @@ import { createAihubmix } from '@aihubmix/ai-sdk-provider';
 import { 
   generateText, 
   streamText, 
-  generateImage, 
+  experimental_generateImage as generateImage, 
   embed, 
   embedMany, 
   generateObject, 
   streamObject, 
-  generateSpeech, 
-  transcribe 
+  experimental_generateSpeech as generateSpeech, 
+  experimental_transcribe as transcribe 
 } from 'ai';
 import { z } from 'zod';
 ```
+
+> **注意**：`generateImage`、`generateSpeech`、`transcribe` などのAPIはAI SDK v6ではまだ実験的な機能です。
 
 ### テキスト生成
 

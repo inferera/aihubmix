@@ -38,9 +38,11 @@ One Gateway, Infinite Models；one-stop request: OpenAI, Claude, Gemini, DeepSee
 ### @aihubmix/ai-sdk-provider
 **AI SDK Provider Package** - Provides unified model access interface for Vercel AI SDK
 
+> **v1.0.1** - Compatible with AI SDK v6
+
 - **Features**：
   - Support for 500+ AI models unified access
-  - Compatible with Vercel AI SDK interface
+  - Compatible with Vercel AI SDK v6 interface
   - Automatic model routing and load balancing
   - Unified error handling and retry mechanisms
   - TypeScript type support

@@ -10,68 +10,71 @@ import {
 import { AnthropicMessagesLanguageModel } from '@ai-sdk/anthropic/internal';
 import { GoogleGenerativeAILanguageModel } from '@ai-sdk/google/internal';
 import {
-  EmbeddingModelV2,
-  LanguageModelV2,
-  ProviderV2,
-  ImageModelV2,
-  TranscriptionModelV2,
-  SpeechModelV2,
-  TranscriptionModelV2CallOptions,
+  EmbeddingModelV3,
+  LanguageModelV3,
+  ProviderV3,
+  ImageModelV3,
+  TranscriptionModelV3,
+  SpeechModelV3,
+  TranscriptionModelV3CallOptions,
 } from '@ai-sdk/provider';
 import { FetchFunction, loadApiKey } from '@ai-sdk/provider-utils';
 import { aihubmixTools } from './aihubmix-tools';
 
-// 导入设置类型
-import type { OpenAIProviderSettings } from '@ai-sdk/openai';
+// OpenAI Provider 设置类型
+interface OpenAIProviderSettings {
+  [key: string]: unknown;
+}
 
 
-export interface AihubmixProvider extends ProviderV2 {
-  (deploymentId: string, settings?: OpenAIProviderSettings): LanguageModelV2;
+export interface AihubmixProvider extends ProviderV3 {
+  (deploymentId: string, settings?: OpenAIProviderSettings): LanguageModelV3;
+
+  readonly specificationVersion: 'v3';
 
   languageModel(
     deploymentId: string,
     settings?: OpenAIProviderSettings,
-  ): LanguageModelV2;
+  ): LanguageModelV3;
 
   chat(
     deploymentId: string,
     settings?: OpenAIProviderSettings,
-  ): LanguageModelV2;
+  ): LanguageModelV3;
 
-  responses(deploymentId: string): LanguageModelV2;
+  responses(deploymentId: string): LanguageModelV3;
 
   completion(
     deploymentId: string,
     settings?: OpenAIProviderSettings,
-  ): LanguageModelV2;
+  ): LanguageModelV3;
 
   embedding(
     deploymentId: string,
     settings?: OpenAIProviderSettings,
-  ): EmbeddingModelV2<string>;
+  ): EmbeddingModelV3;
 
-  image(deploymentId: string, settings?: OpenAIProviderSettings): ImageModelV2;
+  embeddingModel(modelId: string): EmbeddingModelV3;
 
-  imageModel(
-    deploymentId: string,
-    settings?: OpenAIProviderSettings,
-  ): ImageModelV2;
+  image(deploymentId: string, settings?: OpenAIProviderSettings): ImageModelV3;
+
+  imageModel(modelId: string): ImageModelV3;
 
   textEmbedding(
     deploymentId: string,
     settings?: OpenAIProviderSettings,
-  ): EmbeddingModelV2<string>;
+  ): EmbeddingModelV3;
 
   textEmbeddingModel(
     deploymentId: string,
     settings?: OpenAIProviderSettings,
-  ): EmbeddingModelV2<string>;
+  ): EmbeddingModelV3;
 
-  transcription(deploymentId: string): TranscriptionModelV2;
+  transcription(deploymentId: string): TranscriptionModelV3;
 
-  speech(deploymentId: string): SpeechModelV2;
+  speech(deploymentId: string): SpeechModelV3;
 
-  speechModel(deploymentId: string): SpeechModelV2;
+  speechModel(deploymentId: string): SpeechModelV3;
 
   tools: typeof aihubmixTools;
 }
@@ -82,7 +85,7 @@ export interface AihubmixProviderSettings {
 }
 
 class AihubmixTranscriptionModel extends OpenAITranscriptionModel {
-  async doGenerate(options: TranscriptionModelV2CallOptions) {
+  async doGenerate(options: TranscriptionModelV3CallOptions) {
     // 根据MIME类型设置正确的文件扩展名
     if (options.mediaType) {
       const mimeTypeMap: Record<string, string> = {
@@ -160,6 +163,10 @@ class AihubmixOpenAIChatLanguageModel extends OpenAIChatLanguageModel {
           if (body.tools && Array.isArray(body.tools) && body.tools.length === 0 && body.tool_choice) {
             delete body.tool_choice;
             options.body = JSON.stringify(body);
+          }
+          // 调试：打印 max_tokens 参数
+          if (body.max_tokens !== undefined) {
+            console.log('🔍 [DEBUG] Request max_tokens:', body.max_tokens);
           }
         } catch (error) {
           // 如果解析失败，继续使用原始请求
@@ -310,7 +317,7 @@ class AihubmixOpenAIChatLanguageModel extends OpenAIChatLanguageModel {
       fetch: options.fetch,
     });
 
-  const provider = function (
+  const providerFn = function (
     deploymentId: string,
     settings?: OpenAIProviderSettings,
   ) {
@@ -323,24 +330,25 @@ class AihubmixOpenAIChatLanguageModel extends OpenAIChatLanguageModel {
     return createChatModel(deploymentId, settings);
   };
 
-  provider.languageModel = createChatModel;
-  provider.chat = createChatModel;
-  provider.completion = createCompletionModel;
-  provider.responses = createResponsesModel;
-  provider.embedding = createEmbeddingModel;
-  provider.textEmbedding = createEmbeddingModel;
-  provider.textEmbeddingModel = createEmbeddingModel;
-
-  provider.image = createImageModel;
-  provider.imageModel = createImageModel;
-
-  provider.transcription = createTranscriptionModel;
-  provider.transcriptionModel = createTranscriptionModel;
-
-  provider.speech = createSpeechModel;
-  provider.speechModel = createSpeechModel;
-
-  provider.tools = aihubmixTools;
+  // 创建带有所有必需属性的 provider 对象
+  const provider = Object.assign(providerFn, {
+    specificationVersion: 'v3' as const,
+    languageModel: createChatModel,
+    chat: createChatModel,
+    completion: createCompletionModel,
+    responses: createResponsesModel,
+    embedding: createEmbeddingModel,
+    embeddingModel: createEmbeddingModel,
+    textEmbedding: createEmbeddingModel,
+    textEmbeddingModel: createEmbeddingModel,
+    image: createImageModel,
+    imageModel: createImageModel,
+    transcription: createTranscriptionModel,
+    transcriptionModel: createTranscriptionModel,
+    speech: createSpeechModel,
+    speechModel: createSpeechModel,
+    tools: aihubmixTools,
+  });
 
   return provider as AihubmixProvider;
 }

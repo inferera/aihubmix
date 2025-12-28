@@ -1,4 +1,28 @@
-# @ai-sdk/aihubmix
+# @aihubmix/ai-sdk-provider
+
+## 1.0.1
+
+### Patch Changes
+
+- 📝 Updated documentation for AI SDK v6 compatibility
+- Updated documentation links from v5.ai-sdk.dev to sdk.vercel.ai
+- Added version badges and experimental API usage notes
+- Updated all README files (EN, ZH, JA)
+
+## 1.0.0
+
+### Major Changes
+
+- 🎉 **AI SDK v6 Compatibility** - Full support for AI SDK v6
+- Upgraded to Language Model Specification V3
+- Updated all provider dependencies to v3/v4 compatible versions:
+  - `@ai-sdk/anthropic`: ^3.0.0
+  - `@ai-sdk/google`: ^3.0.0
+  - `@ai-sdk/openai`: ^3.0.0
+  - `@ai-sdk/provider`: ^3.0.0
+  - `@ai-sdk/provider-utils`: ^4.0.0
+- Updated tool factory APIs to new specification (removed `name` property)
+- Breaking: Requires AI SDK v6 (ai ^6.0.0)
 
 ## 0.0.2
 
