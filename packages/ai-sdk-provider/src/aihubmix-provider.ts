@@ -414,10 +414,6 @@ class AihubmixOpenAIChatLanguageModel extends OpenAIChatLanguageModel {
             delete body.tool_choice;
             options.body = JSON.stringify(body);
           }
-          // 调试：打印 max_tokens 参数
-          if (body.max_tokens !== undefined) {
-            console.log('🔍 [DEBUG] Request max_tokens:', body.max_tokens);
-          }
         } catch (error) {
           // 如果解析失败，继续使用原始请求
         }
@@ -493,7 +489,6 @@ class AihubmixOpenAIChatLanguageModel extends OpenAIChatLanguageModel {
     }
 
     if (deploymentName === "gpt-5-pro" || deploymentName === "gpt-5-codex") {
-      console.log('responses request', deploymentName);
 			return new OpenAIResponsesLanguageModel(deploymentName, {
 				provider: 'aihubmix.chat',
 				url,
