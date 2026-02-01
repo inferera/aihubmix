@@ -454,16 +454,17 @@ class AihubmixOpenAIChatLanguageModel extends OpenAIChatLanguageModel {
     settings: OpenAIProviderSettings = {},
   ) => {
     const headers = getHeaders();
-    // 使用 OpenAI 兼容格式处理 Claude 模型
-    // 原因：@ai-sdk/anthropic v3 返回 { unified, raw } 对象格式的 finishReason
-    // 但 OpenCode 等使用 AI SDK v2 的应用期望字符串格式
-    // Aihubmix 的 /v1/chat/completions 端点返回标准字符串格式的 finish_reason
     if (deploymentName.startsWith('claude-')) {
-      return new AihubmixOpenAIChatLanguageModel(deploymentName, {
+      return new AnthropicMessagesLanguageModel(deploymentName, {
         provider: 'aihubmix.chat',
-        url,
-        headers: getHeaders,
-        fetch: options.fetch,
+        baseURL: url({ path: '', modelId: deploymentName }),
+        headers: {
+          ...headers,
+          'x-api-key': headers['Authorization'].split(' ')[1],
+        },
+        supportedUrls: () => ({
+          'image/*': [/^https?:\/\/.*$/],
+        }),
       });
     }
     if (
