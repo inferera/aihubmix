@@ -1,5 +1,24 @@
 # @aihubmix/ai-sdk-provider
 
+## 2.0.0
+
+### Major Changes
+
+- 2dc97a3: 升级到 AI SDK v6
+
+  - 升级所有 AI SDK 依赖到 v6 兼容版本
+  - Provider 接口从 V2 升级到 V3 (LanguageModelV3, ProviderV3 等)
+  - 工具工厂函数 API 更新 (createProviderToolFactory)
+  - 添加 specificationVersion 和 embeddingModel 属性
+  - 版本号升级到 1.0.0
+
+### Patch Changes
+
+- f3b2c86: - 添加 `aihubmixChatProviderOptionsSchema` 和 `aihubmixResponsesProviderOptionsSchema` 以支持所有 Vercel AI SDK OpenAI 提供商选项。
+  - 从主入口点导出选项类型和模式。
+  - 改进了 `gpt-5-pro` 和 `gpt-5-codex` 的模型配置。
+  - 通过更好的文件命名逻辑增强了 `AihubmixTranscriptionModel`。
+
 ## 1.0.1
 
 ### Patch Changes

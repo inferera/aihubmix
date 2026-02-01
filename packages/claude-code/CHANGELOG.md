@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.0
+
+### Major Changes
+
+- dab5ee8: init claude code router
+- b4f3b79: add README
+
+### Patch Changes
+
+- aa02c6a: update support models
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
@@ -8,9 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.1] - 2024-01-XX
 
 ### Added
+
 - Initial release
 - CLI commands for server management
 - Web UI interface
 - API key authentication
 - Configurable routing
-- Logging support 
+- Logging support
