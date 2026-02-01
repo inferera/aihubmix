@@ -1,5 +1,13 @@
 # @aihubmix/examples
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies [b6c5f35]
+- Updated dependencies [7a9e37e]
+  - @aihubmix/ai-sdk-provider@2.0.2
+
 ## 0.0.2
 
 ### Patch Changes

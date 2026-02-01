@@ -1,5 +1,16 @@
 # @aihubmix/ai-sdk-provider
 
+## 2.0.2
+
+### Patch Changes
+
+- b6c5f35: - 将 Zod 降级到 ^3.25.76 以保证与 AI SDK 生态系统的稳定性。
+  - 移除调试日志。
+- 7a9e37e: - 添加 `aihubmixChatProviderOptionsSchema` 和 `aihubmixResponsesProviderOptionsSchema` 以支持所有 Vercel AI SDK OpenAI 提供商选项。
+  - 从主入口点导出选项类型和模式。
+  - 改进了 `gpt-5-pro` 和 `gpt-5-codex` 的模型配置。
+  - 通过更好的文件命名逻辑增强了 `AihubmixTranscriptionModel`。
+
 ## 2.0.0
 
 ### Major Changes
