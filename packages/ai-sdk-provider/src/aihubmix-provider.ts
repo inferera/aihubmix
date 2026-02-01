@@ -18,13 +18,263 @@ import {
   SpeechModelV3,
   TranscriptionModelV3CallOptions,
 } from '@ai-sdk/provider';
-import { FetchFunction, loadApiKey } from '@ai-sdk/provider-utils';
+import {
+  FetchFunction,
+  loadApiKey,
+  zodSchema,
+  lazySchema,
+  type InferSchema,
+} from '@ai-sdk/provider-utils';
+import { z } from 'zod';
 import { aihubmixTools } from './aihubmix-tools';
 
-// OpenAI Provider 设置类型
-interface OpenAIProviderSettings {
-  [key: string]: unknown;
-}
+/**
+ * OpenAI Chat 语言模型的 Provider Options Schema
+ * 与 Vercel AI SDK 的 openaiChatLanguageModelOptions 保持一致
+ */
+export const aihubmixChatProviderOptionsSchema = lazySchema(() =>
+  zodSchema(
+    z.object({
+      /**
+       * 修改指定 token 出现在生成内容中的概率
+       * 接受一个 JSON 对象，将 token ID（字符串形式）映射到 -100 到 100 之间的偏差值
+       */
+      logitBias: z.record(z.string(), z.number()).optional(),
+
+      /**
+       * 返回 token 的对数概率
+       * 设置为 true 返回生成 token 的对数概率
+       * 设置为数字返回前 n 个 token 的对数概率
+       */
+      logprobs: z.union([z.boolean(), z.number()]).optional(),
+
+      /**
+       * 是否启用并行工具调用，默认为 true
+       */
+      parallelToolCalls: z.boolean().optional(),
+
+      /**
+       * 代表终端用户的唯一标识符，帮助 OpenAI 监控和检测滥用行为
+       */
+      user: z.string().optional(),
+
+      /**
+       * 推理模型的推理强度，默认为 `medium`
+       */
+      reasoningEffort: z
+        .enum(['none', 'minimal', 'low', 'medium', 'high', 'xhigh'])
+        .optional(),
+
+      /**
+       * 生成的最大完成 token 数，适用于推理模型
+       */
+      maxCompletionTokens: z.number().optional(),
+
+      /**
+       * 是否在 Responses API 中启用持久化
+       */
+      store: z.boolean().optional(),
+
+      /**
+       * 与请求关联的元数据
+       */
+      metadata: z.record(z.string().max(64), z.string().max(512)).optional(),
+
+      /**
+       * 预测模式的参数
+       */
+      prediction: z.record(z.string(), z.any()).optional(),
+
+      /**
+       * 请求的服务层级
+       * - 'auto': 默认服务层级
+       * - 'flex': 50% 更便宜但延迟更高（仅限 o3, o4-mini, gpt-5）
+       * - 'priority': 更快处理（需要企业版）
+       * - 'default': 标准定价和性能
+       */
+      serviceTier: z.enum(['auto', 'flex', 'priority', 'default']).optional(),
+
+      /**
+       * 是否使用严格的 JSON schema 验证
+       * @default true
+       */
+      strictJsonSchema: z.boolean().optional(),
+
+      /**
+       * 控制模型响应的详细程度
+       * 较低的值会产生更简洁的响应，较高的值会产生更详细的响应
+       */
+      textVerbosity: z.enum(['low', 'medium', 'high']).optional(),
+
+      /**
+       * 提示缓存的缓存键
+       */
+      promptCacheKey: z.string().optional(),
+
+      /**
+       * 提示缓存的保留策略
+       * - 'in_memory': 默认，标准提示缓存行为
+       * - '24h': 扩展提示缓存，保持缓存前缀最多 24 小时
+       */
+      promptCacheRetention: z.enum(['in_memory', '24h']).optional(),
+
+      /**
+       * 用于帮助检测违反使用政策用户的稳定标识符
+       */
+      safetyIdentifier: z.string().optional(),
+
+      /**
+       * 覆盖此模型的系统消息模式
+       * - 'system': 使用 'system' 角色（大多数模型的默认值）
+       * - 'developer': 使用 'developer' 角色（推理模型使用）
+       * - 'remove': 完全移除系统消息
+       */
+      systemMessageMode: z.enum(['system', 'developer', 'remove']).optional(),
+
+      /**
+       * 强制将此模型视为推理模型
+       * 适用于自定义 baseURL 的"隐形"推理模型
+       */
+      forceReasoning: z.boolean().optional(),
+    }),
+  ),
+);
+
+/**
+ * OpenAI Responses API 的 Provider Options Schema
+ */
+export const aihubmixResponsesProviderOptionsSchema = lazySchema(() =>
+  zodSchema(
+    z.object({
+      /**
+       * OpenAI 对话的 ID，用于继续对话
+       */
+      conversation: z.string().nullish(),
+
+      /**
+       * 响应中包含的额外字段
+       */
+      include: z
+        .array(
+          z.enum([
+            'reasoning.encrypted_content',
+            'file_search_call.results',
+            'message.output_text.logprobs',
+          ]),
+        )
+        .nullish(),
+
+      /**
+       * 模型的指令
+       */
+      instructions: z.string().nullish(),
+
+      /**
+       * 返回 token 的对数概率
+       */
+      logprobs: z
+        .union([z.boolean(), z.number().min(1).max(20)])
+        .optional(),
+
+      /**
+       * 内置工具调用的最大总数
+       */
+      maxToolCalls: z.number().nullish(),
+
+      /**
+       * 与生成关联的额外元数据
+       */
+      metadata: z.any().nullish(),
+
+      /**
+       * 是否使用并行工具调用，默认为 true
+       */
+      parallelToolCalls: z.boolean().nullish(),
+
+      /**
+       * 上一个响应的 ID，用于继续对话
+       */
+      previousResponseId: z.string().nullish(),
+
+      /**
+       * 提示缓存键
+       */
+      promptCacheKey: z.string().nullish(),
+
+      /**
+       * 提示缓存保留策略
+       */
+      promptCacheRetention: z.enum(['in_memory', '24h']).nullish(),
+
+      /**
+       * 推理模型的推理强度
+       */
+      reasoningEffort: z.string().nullish(),
+
+      /**
+       * 控制推理摘要输出
+       */
+      reasoningSummary: z.string().nullish(),
+
+      /**
+       * 安全监控的标识符
+       */
+      safetyIdentifier: z.string().nullish(),
+
+      /**
+       * 请求的服务层级
+       */
+      serviceTier: z.enum(['auto', 'flex', 'priority', 'default']).nullish(),
+
+      /**
+       * 是否存储生成内容，默认为 true
+       */
+      store: z.boolean().nullish(),
+
+      /**
+       * 是否使用严格的 JSON schema 验证
+       */
+      strictJsonSchema: z.boolean().nullish(),
+
+      /**
+       * 控制模型响应的详细程度
+       */
+      textVerbosity: z.enum(['low', 'medium', 'high']).nullish(),
+
+      /**
+       * 输出截断控制
+       */
+      truncation: z.enum(['auto', 'disabled']).nullish(),
+
+      /**
+       * 代表终端用户的唯一标识符
+       */
+      user: z.string().nullish(),
+
+      /**
+       * 系统消息模式
+       */
+      systemMessageMode: z.enum(['system', 'developer', 'remove']).optional(),
+
+      /**
+       * 强制将模型视为推理模型
+       */
+      forceReasoning: z.boolean().optional(),
+    }),
+  ),
+);
+
+// Provider Options 类型推断
+export type AihubmixChatProviderOptions = InferSchema<
+  typeof aihubmixChatProviderOptionsSchema
+>;
+
+export type AihubmixResponsesProviderOptions = InferSchema<
+  typeof aihubmixResponsesProviderOptionsSchema
+>;
+
+// OpenAI Provider 设置类型（保持向后兼容）
+type OpenAIProviderSettings = AihubmixChatProviderOptions;
 
 
 export interface AihubmixProvider extends ProviderV3 {
@@ -249,6 +499,7 @@ class AihubmixOpenAIChatLanguageModel extends OpenAIChatLanguageModel {
 				url,
 				headers: getHeaders,
 				fetch: options.fetch,
+				fileIdPrefixes: ['file-'],
 			});
 		}
 
@@ -288,6 +539,8 @@ class AihubmixOpenAIChatLanguageModel extends OpenAIChatLanguageModel {
       provider: 'aihubmix.responses',
       url,
       headers: getHeaders,
+      fetch: options.fetch,
+      fileIdPrefixes: ['file-'],
     });
 
   const createImageModel = (
