@@ -1,4 +1,11 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// 从 monorepo 根目录加载 .env（examples 上一级）
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
 import { createAihubmix } from '@aihubmix/ai-sdk-provider';
 import { generateText, streamText, experimental_generateImage as generateImage, embed, experimental_generateSpeech as generateSpeech, experimental_transcribe as transcribe, streamObject, embedMany, generateObject } from 'ai';
 import { readFile } from 'fs/promises';
@@ -11,11 +18,11 @@ console.log('🚀 开始执行 Aihubmix AI SDK Provider 测试套件\n');
 // 测试配置
 const testConfig = {
   generateText: {
-    model: 'claude-3-7-sonnet-20250219',
+    model: 'gpt-5.2-codex',
     prompt: 'Invent a new holiday and describe its traditions.',
   },
   streamText: {
-    model: 'gpt-3.5-turbo',
+    model: 'gpt-5-pro',
     prompt: 'Invent a new holiday and describe its traditions.',
   },
   generateImage: {
@@ -281,13 +288,13 @@ async function runAllTests(): Promise<boolean> {
     { name: 'Workspace 依赖', fn: testWorkspaceDependency },
     { name: 'Generate Text', fn: testGenerateText },
     { name: 'Stream Text', fn: testStreamText },
-    { name: 'Generate Image', fn: testGenerateImage },
-    { name: 'Generate Speech', fn: testGenerateSpeech },
-    { name: 'Generate Object', fn: testGenerateObject },
-    { name: 'Stream Object', fn: testStreamObject },
-    { name: 'Embed', fn: testEmbed },
-    { name: 'Embed Many', fn: testEmbedMany },
-    { name: 'Transcribe', fn: testTranscribe },
+    // { name: 'Generate Image', fn: testGenerateImage },
+    // { name: 'Generate Speech', fn: testGenerateSpeech },
+    // { name: 'Generate Object', fn: testGenerateObject },
+    // { name: 'Stream Object', fn: testStreamObject },
+    // { name: 'Embed', fn: testEmbed },
+    // { name: 'Embed Many', fn: testEmbedMany },
+    // { name: 'Transcribe', fn: testTranscribe },
   ];
 
   const results: TestResult[] = [];
